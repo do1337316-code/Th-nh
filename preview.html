@@ -1,0 +1,2425 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTC Study Quest - Cẩm Nang & Hệ Thống Học Tập Đại Số Tuyến Tính</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- KaTeX CDN for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 550px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 280px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 320px;
+            }
+        }
+        .nav-btn-active {
+            background-color: #1f2937;
+            color: #34d399;
+            font-weight: 700;
+            border-bottom: 2px solid #34d399;
+        }
+        .katex-display {
+            margin: 0.5em 0 !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 4px 0;
+        }
+        .chapter-header {
+            cursor: pointer;
+            user-select: none;
+        }
+        .concept-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+    </style>
+<style>
+#quiz-topic-menu button{transition:background-color .15s ease;}
+#quiz-topic-menu::-webkit-scrollbar{width:8px;}
+#quiz-topic-menu::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px;}
+</style>
+</head>
+<!-- Chosen Palette: Warm Neutral & Sage Forest (Background: Stone-50, Primary: Emerald-800, Secondary: Indigo-900, Accent: Amber/Terracotta) -->
+<!-- Application Structure Plan: Upgraded the "Chương" section into a fully realized interactive learning module while preserving the existing UI theme. Chapters 1, 2, and 3 expand in-place directly below their respective accordion header cards. Chapter 1 contains detailed lessons divided into four key parts: Matrix Concepts, Matrix Operations, Matrix Multiplication, and Determinants & Inverses. KaTeX math formulas are rendered dynamically upon accordion expansion. -->
+<!-- Visualization & Content Choices: Clean dynamic state-driven accordion design with sub-tabs for multi-part chapter lessons. In-place expansion ensures zero page redirects or popups. KaTeX equations and step-by-step matrix multiplication examples enhance comprehension. Confirming NO SVG/Mermaid used. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<body class="bg-stone-50 text-stone-800 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Header Navigation -->
+    <header class="bg-stone-900 text-stone-100 shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">📐</span>
+                <div>
+                    <h1 class="text-lg font-bold text-emerald-400 leading-tight">UTC STUDY QUEST - ĐẠI SỐ TUYẾN TÍNH</h1>
+                    <p class="text-xs text-stone-400">Hệ Thống Học Tập Trực Quan & Giải Bẫy Trắc Nghiệm</p>
+                </div>
+            </div>
+            <nav class="flex flex-wrap justify-center gap-1 text-xs sm:text-sm font-medium">
+                <button class="nav-btn" data-section="dashboard" onclick="showAppSection('dashboard')">🏠 Dashboard</button><button onclick="switchTab('formulas')" id="nav-formulas" class="px-3 py-1.5 rounded-md hover:bg-stone-800 text-stone-300 transition nav-btn-active">📘 Học Theo Chương</button>
+                <button onclick="switchTab('traps')" id="nav-traps" class="px-3 py-1.5 rounded-md hover:bg-stone-800 text-stone-300 transition">⚠️ 6 Bẫy "Chết Người"</button>
+                <button onclick="switchTab('simulator')" id="nav-simulator" class="px-3 py-1.5 rounded-md hover:bg-stone-800 text-stone-300 transition">🧮 Mô Phỏng Gauss & Hạng</button>
+                <button onclick="switchTab('quiz')" id="nav-quiz" class="px-3 py-1.5 rounded-md hover:bg-stone-800 text-stone-300 transition">🎯 Luyện Trắc Nghiệm</button>
+                <button onclick="switchTab('analytics')" id="nav-analytics" class="px-3 py-1.5 rounded-md hover:bg-stone-800 text-stone-300 transition">📊 Thống Kê</button>
+                <button onclick="showCalculusCourse()" id="nav-calculus" class="px-3 py-1.5 rounded-md hover:bg-stone-800 text-stone-300 transition">📗 Giải Tích 1</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    
+<section id="app-dashboard" class="app-section" style="display:none;">
+  <div class="max-w-6xl mx-auto p-4 md:p-6">
+    <div class="rounded-2xl bg-white shadow p-5 mb-5">
+      <h2 class="text-2xl font-bold mb-1">🏠 Dashboard học tập</h2>
+      <p class="text-gray-600">Theo dõi tiến độ, câu sai và các nội dung cần ôn.</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+      <div class="bg-white rounded-xl shadow p-4"><div class="text-sm text-gray-500">📚 Bài đã học</div><div id="dash-lessons" class="text-2xl font-bold mt-1">0</div></div>
+      <div class="bg-white rounded-xl shadow p-4"><div class="text-sm text-gray-500">📝 Câu đã làm</div><div id="dash-answered" class="text-2xl font-bold mt-1">0</div></div>
+      <div class="bg-white rounded-xl shadow p-4"><div class="text-sm text-gray-500">❌ Câu sai cần ôn</div><div id="dash-wrong" class="text-2xl font-bold mt-1">0</div></div>
+      <div class="bg-white rounded-xl shadow p-4"><div class="text-sm text-gray-500">🎯 Độ chính xác</div><div id="dash-accuracy" class="text-2xl font-bold mt-1">0%</div></div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-5">
+      <div class="bg-white rounded-2xl shadow p-5">
+        <h3 class="font-bold text-lg mb-3">🎯 Ôn tập hôm nay</h3>
+        <p class="text-gray-600 text-sm mb-4">Ưu tiên các câu đã sai hoặc làm chưa chắc.</p>
+        <button onclick="startWrongQuiz(); openQuizArea();" class="px-4 py-2 rounded-lg bg-indigo-600 text-white">▶ Ôn câu sai</button>
+      </div>
+      <div class="bg-white rounded-2xl shadow p-5">
+        <h3 class="font-bold text-lg mb-3">⚡ Luyện nhanh</h3>
+        <p class="text-gray-600 text-sm mb-4">Tạo một bộ 15 câu ngẫu nhiên.</p>
+        <button onclick="startQuickQuiz();" class="px-4 py-2 rounded-lg bg-emerald-600 text-white">🎲 Làm 15 câu</button>
+      </div>
+    </div>
+  </div>
+</section>
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- SECTION 1: SYSTEMATIC CHAPTER LEARNING SYSTEM -->
+        <section id="sec-formulas" class="space-y-6">
+            <div class="bg-emerald-900 text-white rounded-xl p-5 shadow-sm border border-emerald-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold mb-1 flex items-center gap-2">
+                        <span>📖</span> HỆ THỐNG HỌC TẬP THEO CHƯƠNG (UTC STUDY QUEST)
+                    </h2>
+                    <p class="text-sm text-emerald-100">
+                        Bấm vào ô từng chương để bung toàn bộ bài giảng, lý thuyết nền tảng, định nghĩa và ví dụ tính toán minh họa ngay bên dưới.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 text-xs bg-emerald-950/60 px-3 py-2 rounded-lg border border-emerald-700">
+                    <span>💡 Mẹo:</span> Bấm lại vào khung chương để thu gọn bất kỳ lúc nào.
+                </div>
+            </div>
+
+            <!-- Filter & Search Controls -->
+            <!-- PHÂN MỨC ĐỘ ĐẠI SỐ TUYẾN TÍNH: chỉ áp dụng cho ĐSTT -->
+            <div class="bg-white rounded-xl border border-emerald-200 shadow-sm p-4 space-y-3">
+                <div>
+                    <h3 class="font-bold text-emerald-900">🎚️ 4 MỨC ĐỘ ĐẠI SỐ TUYẾN TÍNH</h3>
+                    <p class="text-xs text-stone-500 mt-1">Phân loại theo độ khó học tập; không thay đổi nội dung của các môn/phần khác.</p>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="rounded-lg border border-stone-200 bg-stone-50 p-3">
+                        <div class="font-bold text-sm">Mức 1 · Cơ bản</div>
+                        <div class="text-xs text-stone-600 mt-1">Phép toán ma trận, định thức, hạng ma trận.</div>
+                    </div>
+                    <div class="rounded-lg border border-stone-200 bg-stone-50 p-3">
+                        <div class="font-bold text-sm">Mức 2 · Trung bình</div>
+                        <div class="text-xs text-stone-600 mt-1">Giải hệ phương trình tuyến tính, biến đổi sơ cấp.</div>
+                    </div>
+                    <div class="rounded-lg border border-stone-200 bg-stone-50 p-3">
+                        <div class="font-bold text-sm">Mức 3 · Vận dụng</div>
+                        <div class="text-xs text-stone-600 mt-1">Không gian vectơ, cơ sở, số chiều, ánh xạ tuyến tính.</div>
+                    </div>
+                    <div class="rounded-lg border border-stone-200 bg-stone-50 p-3">
+                        <div class="font-bold text-sm">Mức 4 · Nâng cao</div>
+                        <div class="text-xs text-stone-600 mt-1">Trị riêng, vectơ riêng và bài toán tổng hợp nhiều chương.</div>
+                        <div class="text-[11px] text-amber-700 mt-1">Chưa có dữ liệu tương ứng trong file hiện tại.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3 bg-white p-4 rounded-xl border border-stone-200 shadow-sm">
+                <div class="flex gap-2 text-sm font-medium w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                    <button onclick="filterFormulas('all', this)" class="formula-filter-btn px-3 py-1.5 rounded-lg bg-emerald-800 text-white text-xs sm:text-sm font-semibold">Tất cả các chương</button>
+                    <button onclick="filterFormulas('ch1', this)" class="formula-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-stone-200 text-xs sm:text-sm">Chương 1: Ma trận & Det</button>
+                    <button onclick="filterFormulas('ch2', this)" class="formula-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-stone-200 text-xs sm:text-sm">Chương 2: Hệ phương trình</button>
+                    <button onclick="filterFormulas('ch3', this)" class="formula-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-stone-200 text-xs sm:text-sm">Chương 3: Không gian Vectơ</button>
+                </div>
+                <input type="text" id="formula-search" oninput="searchFormulas()" placeholder="🔍 Tìm khái niệm (ma trận đơn vị, nhân ma trận, Cramer)..." class="w-full sm:w-72 px-3 py-1.5 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">
+            </div>
+
+            <!-- Chapter Accordions Container -->
+            <div id="formula-chapters-container" class="space-y-5">
+                <!-- Dynamically generated chapter interactive system -->
+            </div>
+        </section>
+
+        <!-- SECTION 2: 6 DEADLY TRAPS EXPLAINER -->
+        <section id="sec-traps" class="space-y-6 hidden">
+            <div class="bg-amber-900 text-white rounded-xl p-5 shadow-sm border border-amber-800">
+                <h2 class="text-xl font-bold mb-2 flex items-center gap-2">
+                    <span>⚠️</span> GIẢI MÃ 6 BẪY LÝ THUYẾT VÀ TÍNH TOÁN KINH ĐIỂN
+                </h2>
+                <p class="text-sm text-amber-100">
+                    Đối chiếu giữa <strong>Lỗi sai phổ biến</strong> và <strong>Bản chất chuẩn xác</strong> để tránh mất điểm đáng tiếc.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Trap Selector List -->
+                <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-4 space-y-2">
+                    <h3 class="font-bold text-stone-800 border-b pb-2 mb-3 text-sm uppercase tracking-wider">Danh Sách Bẫy Cần Tránh</h3>
+                    <div id="trap-buttons-container" class="space-y-2">
+                        <!-- Trap Buttons dynamically loaded -->
+                    </div>
+                </div>
+
+                <!-- Trap Detail Display Card -->
+                <div class="lg:col-span-2 bg-white rounded-xl border border-stone-200 shadow-sm p-6 space-y-4" id="trap-detail-card">
+                    <!-- Loaded via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: GAUSS & RANK PARAMETER SIMULATOR -->
+        <section id="sec-simulator" class="space-y-6 hidden">
+            <div class="bg-indigo-900 text-white rounded-xl p-5 shadow-sm border border-indigo-800">
+                <h2 class="text-xl font-bold mb-2 flex items-center gap-2">
+                    <span>🧮</span> MÔ PHỎNG PHÉP BIẾN ĐỔI GAUSS VÀ BIỆN LUẬN THAM SỐ \(m\)
+                </h2>
+                <p class="text-sm text-indigo-100">
+                    Trực quan hóa biến đổi ma trận theo thời gian thực khi thay đổi giá trị \(m\).
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Control Panel -->
+                <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-5 space-y-4">
+                    <h3 class="font-bold text-stone-800 border-b pb-2 text-sm uppercase tracking-wider">Chọn Dạng Bài Biện Luận \(m\)</h3>
+                    
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-600 mb-1">Mẫu bài toán:</label>
+                        <select id="sim-problem-select" onchange="changeSimProblem()" class="w-full text-sm border border-stone-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-600 bg-stone-50 font-medium">
+                            <option value="1">Bài 1: Biện luận hạng r(A) chứa m (Chương 1)</option>
+                            <option value="2">Bài 2: Hệ phương trình AX = B vô nghiệm (Chương 2)</option>
+                            <option value="3">Bài 3: Hệ thuần nhất AX = 0 có nghiệm không tầm thường</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t">
+                        <div class="flex justify-between text-sm font-semibold">
+                            <span>Giá trị tham số \(m\):</span>
+                            <span id="sim-m-val-display" class="text-indigo-700 font-bold text-base">m = -3</span>
+                        </div>
+                        <input type="range" id="sim-m-slider" min="-5" max="5" step="1" value="-3" oninput="updateSimData()" class="w-full accent-indigo-700 cursor-pointer">
+                        <div class="flex justify-between text-xs text-stone-500 font-mono">
+                            <span>-5</span>
+                            <span>-3</span>
+                            <span>0</span>
+                            <span>2</span>
+                            <span>+5</span>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-stone-50 rounded-lg border border-stone-200 text-xs space-y-1.5">
+                        <p class="font-bold text-stone-700">📌 Ghi nhớ quy tắc đếm hạng:</p>
+                        <p class="text-stone-600">1. Đưa ma trận về dạng **bậc thang** bằng phép biến đổi sơ cấp.</p>
+                        <p class="text-stone-600">2. Hạng \(r(A)\) = Số hàng **khác không**.</p>
+                        <p class="text-stone-600">3. Khi \(m\) làm triệt tiêu phần tử cơ sở \(\to\) **hàng bị biến thành 0** \(\to\) **tụt hạng**.</p>
+                    </div>
+                </div>
+
+                <!-- Simulation Visualizer -->
+                <div class="lg:col-span-2 bg-white rounded-xl border border-stone-200 shadow-sm p-6 space-y-6">
+                    <h3 class="font-bold text-stone-800 border-b pb-2 text-sm uppercase tracking-wider flex flex-wrap justify-between items-center gap-2">
+                        <span>Các Bước Biến Đổi Sơ Cấp Từng Bước</span>
+                        <span id="sim-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">m = -3</span>
+                    </h3>
+
+                    <div class="space-y-6" id="sim-steps-container">
+                        <!-- Step-by-step matrix visualization rendered via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: PRACTICE QUIZ -->
+        <section id="sec-quiz" class="space-y-6 hidden">
+            <div class="bg-stone-800 text-white rounded-xl p-5 shadow-sm border border-stone-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold mb-1 flex items-center gap-2">
+                        <span>🎯</span> LUYỆN TRẮC NGHIỆM CHỐNG BẪY (CHƯƠNG 1, 2 & 3)
+                    </h2>
+                    <p class="text-sm text-stone-300">
+                        Bài luyện 10 câu trắc nghiệm chuẩn cấu trúc đề thi.
+                    </p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-center px-3 py-1 bg-stone-900 rounded-lg border border-stone-700">
+                        <div class="text-[10px] text-stone-400 uppercase">Điểm số hiện tại</div>
+                        <div id="quiz-score-num" class="text-sm font-bold text-emerald-400">0 / 10</div>
+                    </div>
+                    <button onclick="resetQuiz()" class="px-3 py-1.5 bg-stone-700 hover:bg-stone-600 text-xs font-semibold rounded-lg transition">Làm lại từ đầu</button>
+                </div>
+            </div>
+
+            <!-- LUYỆN THEO DẠNG + CÂU SAI -->
+            <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-sm space-y-3">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="font-bold text-stone-800">🧩 Luyện theo dạng bài</h3>
+                        <p class="text-xs text-stone-500">Chọn một dạng để hệ thống tạo 15 câu chỉ thuộc dạng đó.</p>
+                    </div>
+                    <div id="quiz-topic-menu-wrap" class="relative w-full md:w-80">
+                        <button id="quiz-topic-toggle" type="button" onclick="toggleQuizTopicMenu()" class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm bg-white text-left flex items-center justify-between">
+                            <span>🎯 Tất cả dạng bài</span><span>⌄</span>
+                        </button>
+                        <div id="quiz-topic-menu" class="hidden absolute z-30 right-0 mt-1 w-full bg-white border border-stone-300 rounded-lg shadow-lg max-h-80 overflow-y-auto"></div>
+                        <select id="quiz-topic-select" class="hidden" aria-hidden="true">
+                            <option value="all">🎯 Tất cả dạng bài</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="startWrongQuiz()" class="px-3 py-2 bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold rounded-lg">🔁 Làm lại câu sai</button>
+                    <button onclick="startTopicQuiz('all')" class="px-3 py-2 bg-emerald-800 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg">🎲 Bộ 15 câu ngẫu nhiên</button>
+                    <button onclick="clearWrongHistory()" class="px-3 py-2 bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-semibold rounded-lg">🗑️ Xóa danh sách câu sai</button>
+                </div>
+                <div id="wrong-count" class="text-xs text-rose-700 font-semibold"></div>
+            </div>
+
+            <!-- Question Navigator Map -->
+            <div class="bg-white p-3 rounded-xl border border-stone-200 shadow-sm flex items-center gap-2 overflow-x-auto">
+                <span class="text-xs font-bold text-stone-500 uppercase whitespace-nowrap">Sơ đồ câu:</span>
+                <div id="quiz-nav-map" class="flex gap-1.5">
+                    <!-- Question navigation buttons -->
+                </div>
+            </div>
+
+            <!-- Quiz Card -->
+            <div id="quiz-card" class="bg-white rounded-xl border border-stone-200 shadow-sm p-6 space-y-6">
+                <!-- Quiz content rendered via JS -->
+            </div>
+        </section>
+
+        <!-- SECTION 5: ANALYTICS & MASTERY -->
+        <section id="sec-analytics" class="space-y-6 hidden">
+            <div class="bg-stone-900 text-white rounded-xl p-5 shadow-sm border border-stone-800">
+                <h2 class="text-xl font-bold mb-2 flex items-center gap-2">
+                    <span>📊</span> THỐNG KÊ MA TRẬN ĐỀ THI & TỈ LỆ DỄ MẮC BẪY
+                </h2>
+                <p class="text-sm text-stone-300">
+                    Phân tích cấu trúc phân bổ câu hỏi giữa các chương.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Chart 1: Content Distribution -->
+                <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-5 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-stone-800 border-b pb-2 text-sm uppercase tracking-wider mb-3">Phân Bổ Cấu Trúc Đề Thi (15 CÂU)</h3>
+                        <p class="text-xs text-stone-500 mb-4">Tỉ lệ phân bổ câu hỏi chuẩn giữa Ma trận & Det (Chương 1), Hệ phương trình (Chương 2) và Không gian Vectơ (Chương 3).</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart-distribution"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Trap Risk Index -->
+                <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-5 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-stone-800 border-b pb-2 text-sm uppercase tracking-wider mb-3">Chỉ Số Rủi Ro Mắc Bẫy Theo Dạng Bài</h3>
+                        <p class="text-xs text-stone-500 mb-4">Tỉ lệ sinh viên bị trừ điểm do nhầm lẫn lý thuyết hoặc quên công thức số mũ \(n\).</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart-trap-risk"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Advice Summary Card -->
+            <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-6 space-y-3">
+                <h3 class="font-bold text-stone-800 text-sm uppercase tracking-wider text-emerald-800 flex items-center gap-2">
+                    <span>💡</span> LỜI KHUYÊN CHIẾN THUẬT LÀM BÀI TRẮC NGHIỆM
+                </h3>
+                <ul class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm text-stone-600">
+                    <li class="p-3 bg-stone-50 rounded-lg border border-stone-200 space-y-1">
+                        <strong class="text-stone-800 block">1. Đọc kỹ cấp ma trận \(n\):</strong>
+                        Khi tính \(\det(kA)\) hay \(\det(P_A)\), việc đầu tiên là xác định ma trận cấp \(n\) để lũy thừa \(n\) hoặc \(n-1\) chuẩn xác.
+                    </li>
+                    <li class="p-3 bg-stone-50 rounded-lg border border-stone-200 space-y-1">
+                        <strong class="text-stone-800 block">2. Kiểm tra tính giao hoán \(AB=BA\):</strong>
+                        Đề bài KHÔNG cho \(AB=BA\) thì tuyệt đối KHÔNG áp dụng hằng đẳng thức số học \((A+B)^2 = A^2+2AB+B^2\).
+                    </li>
+                    <li class="p-3 bg-stone-50 rounded-lg border border-stone-200 space-y-1">
+                        <strong class="text-stone-800 block">3. Điều kiện nhân ma trận:</strong>
+                        Nhân \(A_{m \times n} \times B_{n \times p}\) đòi hỏi số cột của \(A\) phải bằng số hàng của \(B\). Tích có kích thước \(m \times p\).
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+    <!-- SECTION: GIẢI TÍCH 1 (ADDED FROM GEMINI COURSE DATA) -->
+    <section id="sec-calculus" class="hidden space-y-6">
+        <div class="bg-indigo-900 text-white rounded-xl p-5 shadow-sm border border-indigo-800">
+            <div class="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
+                <div>
+                    <h2 class="text-xl font-bold">📗 GIẢI TÍCH 1</h2>
+                    <p class="text-sm text-indigo-100 mt-1">Học theo bài: lý thuyết → ví dụ → bài tập → mẹo ghi nhớ.</p>
+                </div>
+                <button onclick="backToLinearAlgebra()" class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-sm">← Về Đại số tuyến tính</button>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            <aside class="lg:col-span-4 bg-white rounded-xl border border-stone-200 shadow-sm p-4 h-fit lg:sticky lg:top-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-bold text-stone-800">📚 Chương & bài học</h3>
+                    <span id="calc-progress" class="text-xs font-semibold text-indigo-700">0/0</span>
+                </div>
+                <input id="calc-search" oninput="searchCalculusLessons()" class="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm mb-3" placeholder="🔍 Tìm bài học...">
+                <div id="calc-syllabus" class="space-y-3"></div>
+            </aside>
+            <div class="lg:col-span-8">
+                <div id="calc-player" class="bg-white rounded-xl border border-stone-200 shadow-sm p-5 min-h-[420px]"></div>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-stone-400 text-xs py-4 border-t border-stone-800">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-1">
+            <p>UTC Study Quest - Cẩm nang học tập & Giải bẫy trắc nghiệm Đại số tuyến tính.</p>
+            <p class="text-stone-500">Hệ thống tương tác Chương 1, Chương 2 & Chương 3 trực quan, chuẩn kiến thức đại học.</p>
+        </div>
+    </footer>
+
+    <!-- Added Calculus 1 data and UI logic -->
+    <script>
+        const COURSES_DATA = {
+            linear: {
+                name: "Đại Số Tuyến Tính",
+                chapters: [
+                    {
+                        id: "lin_ch1",
+                        title: "Chương 1: Số Phức",
+                        lessons: [
+                            {
+                                id: "lin_c1_l1",
+                                title: "Bài 1: Số phức dạng chính tắc",
+                                videoUrl: "https://www.youtube.com/embed/7TW7ekgpDiU",
+                                theory: "Số phức $z$ biểu diễn dưới dạng đại số: $z = a + bi$ với $a, b \\in \\mathbb{R}$ và $i^2 = -1$.<br>• Phần thực $\\operatorname{Re}(z) = a$, phần ảo $\\operatorname{Im}(z) = b$.<br>• Số phức liên hợp: $\\overline{z} = a - bi$. Modun $|z| = \\sqrt{a^2 + b^2}$.",
+                                example: "Cho $z = 3 - 4i$. Tìm $\\overline{z}$ và $|z|$:<br>• $\\overline{z} = 3 + 4i$.<br>• $|z| = \\sqrt{3^2 + (-4)^2} = \\sqrt{25} = 5$.",
+                                practiceQ: {
+                                    q: "Cho số phức $z = 1 - 2i$. Tính giá trị của $w = z \\cdot \\overline{z}$.",
+                                    options: ["5", "3", "-3", "$1 + 4i$"],
+                                    correct: 0,
+                                    explain: "$z \\cdot \\overline{z} = |z|^2 = 1^2 + (-2)^2 = 1 + 4 = 5$."
+                                },
+                                tips: "⚠️ Bẫy: Phần ảo của $z = a+bi$ là $b$, KHÔNG bao gồm đơn vị ảo $i$."
+                            }
+                        ]
+                    },
+                    {
+                        id: "lin_ch2",
+                        title: "Chương 2: Ma Trận - Định Thức - Hệ PT Tuyến Tính",
+                        lessons: [
+                            {
+                                id: "lin_c2_l1",
+                                title: "Bài 1: Ma trận & Các phép toán ma trận",
+                                videoUrl: "https://www.youtube.com/embed/fmzWDXZxawE",
+                                theory: "• Ma trận cỡ $m \\times n$ gồm $m$ hàng, $n$ cột.<br>• Phép cộng hai ma trận: bắt buộc <strong>cùng kích thước</strong>.<br>• Phép nhân hai ma trận: $A_{m \\times n} \\times B_{n \\times p} = C_{m \\times p}$ (số cột ma trận trước = số hàng ma trận sau).",
+                                example: "Cho $A = \\begin{pmatrix} 1 & 2 \\end{pmatrix}_{1 \\times 2}$ và $B = \\begin{pmatrix} 3 & 4 \\\\ 5 & 6 \\end{pmatrix}_{2 \\times 2}$.<br>Tính tích $C = A \\cdot B$:<br>$c_{11} = 1(3) + 2(5) = 13$, $c_{12} = 1(4) + 2(6) = 16 \\implies C = \\begin{pmatrix} 13 & 16 \\end{pmatrix}$.",
+                                practiceQ: {
+                                    q: "Cho hai ma trận $A_{2 \\times 3}$ và $B_{3 \\times 4}$. Kích thước của tích $A \\cdot B$ là:",
+                                    options: ["$2 \\times 4$", "$3 \\times 3$", "$4 \\times 2$", "Không nhân được"],
+                                    correct: 0,
+                                    explain: "Cỡ ma trận tích là (hàng ma trận 1) $\\times$ (cột ma trận 2) = $2 \\times 4$."
+                                },
+                                tips: "⚠️ Bẫy: Phép nhân ma trận nói chung KHÔNG có tính chất giao hoán ($AB \\ne BA$)."
+                            },
+                            {
+                                id: "lin_c2_l3",
+                                title: "Bài 3: Hạng của ma trận (Gauss)",
+                                videoUrl: "https://www.youtube.com/embed/vN6jkfbcWGI",
+                                theory: "Hạng của ma trận $r(A)$ là số hàng khác 0 sau khi dùng các phép biến đổi sơ cấp theo hàng để đưa về ma trận bậc thang.",
+                                example: "Đưa ma trận về bậc thang: $\\begin{pmatrix} 1 & 2 \\\\ 2 & 4 \\end{pmatrix} \\xrightarrow{h_2 - 2h_1} \\begin{pmatrix} 1 & 2 \\\\ 0 & 0 \\end{pmatrix}$. Số hàng khác không là 1 $\\implies r(A) = 1$.",
+                                practiceQ: {
+                                    q: "Tìm $m$ để ma trận $\\begin{pmatrix} 1 & 2 \\\\ 0 & m-2 \\end{pmatrix}$ có hạng $r(A) = 1$.",
+                                    options: ["$m = 2$", "$m \\ne 2$", "$m = 0$", "$m = -2$"],
+                                    correct: 0,
+                                    explain: "Muốn hạng tụt xuống 1 thì hàng 2 phải bằng 0 $\\iff m - 2 = 0 \\iff m = 2$."
+                                },
+                                tips: "⚠️ Khi $m$ làm triệt tiêu phần tử cơ sở, hàng đó biến thành toàn 0 $\\implies$ tụt hạng."
+                            },
+                            {
+                                id: "lin_c2_l5",
+                                title: "Bài 5: Hệ phương trình tuyến tính",
+                                videoUrl: "https://www.youtube.com/embed/UgBAIbp_910",
+                                theory: "Định lý Kronecker - Capelli:<br>• $r(A) < r(\\overline{A}) \\iff$ Hệ vô nghiệm.<br>• $r(A) = r(\\overline{A}) = n \\iff$ Hệ có nghiệm duy nhất.<br>• $r(A) = r(\\overline{A}) < n \\iff$ Hệ có vô số nghiệm phụ thuộc $n - r(A)$ ẩn tự do.",
+                                example: "Hệ có $r(A) = 2, r(\\overline{A}) = 3 \\implies$ Hệ vô nghiệm ngay lập tức.",
+                                practiceQ: {
+                                    q: "Hệ phương trình 3 ẩn có $r(A) = r(\\overline{A}) = 2$. Kết luận nào sau đây đúng?",
+                                    options: ["Hệ có vô số nghiệm phụ thuộc 1 ẩn tự do", "Hệ vô nghiệm", "Hệ có nghiệm duy nhất", "Hệ có 2 nghiệm"],
+                                    correct: 0,
+                                    explain: "Số ẩn $n = 3$, $r = 2 < 3 \\implies$ Vô số nghiệm phụ thuộc $3 - 2 = 1$ ẩn tự do."
+                                },
+                                tips: "⚠️ Bẫy: Nhầm lẫn giữa vô nghiệm ($r(A) < r(\\overline{A})$) và vô số nghiệm ($r(A) = r(\\overline{A}) < n$)."
+                            }
+                        ]
+                    },
+                    {
+                        id: "lin_ch3",
+                        title: "Chương 3: Không Gian Vectơ",
+                        lessons: [
+                            {
+                                id: "lin_c3_l1",
+                                title: "Bài 1: Không gian véc tơ",
+                                videoUrl: "https://www.youtube.com/embed/B3hg2u2zpSs",
+                                theory: "Tập hợp $V$ cùng hai phép toán cộng vectơ và nhân với vô hướng thỏa mãn 8 tiên đề không gian tuyến tính. Số chiều không gian nghiệm của hệ thuần nhất $AX = 0$ là $\\dim(V) = n - r(A)$.",
+                                example: "Hệ thuần nhất 4 ẩn có hạng $r(A) = 2 \\implies \\dim(V) = 4 - 2 = 2$.",
+                                practiceQ: {
+                                    q: "Cho hệ 5 ẩn có $r(A) = 3$. Số chiều của không gian nghiệm hệ thuần nhất $AX = 0$ là:",
+                                    options: ["2", "3", "5", "1"],
+                                    correct: 0,
+                                    explain: "$\\dim = n - r(A) = 5 - 3 = 2$."
+                                },
+                                tips: "⚠️ Số chiều nghiệm không phải là hạng $r(A)$, mà là $n - r(A)$."
+                            }
+                        ]
+                    },
+                    {
+                        id: "lin_ch4",
+                        title: "Chương 4: Ánh Xạ Tuyến Tính",
+                        lessons: [
+                            {
+                                id: "lin_c4_l1",
+                                title: "Bài 1: Ánh xạ tuyến tính",
+                                videoUrl: "https://www.youtube.com/embed/1syWg5BKYTc",
+                                theory: "Ánh xạ $f: V \\to W$ là tuyến tính nếu thỏa mãn:<br>1. $f(u + v) = f(u) + f(v)$<br>2. $f(k u) = k f(u)$.",
+                                example: "$f(x, y) = (2x+y, x-y)$ là ánh xạ tuyến tính. $g(x) = x + 1$ không tuyến tính vì $g(0) = 1 \\ne 0$.",
+                                practiceQ: {
+                                    q: "Ánh xạ nào sau đây là ánh xạ tuyến tính?",
+                                    options: ["$f(x, y) = (2x, x - 3y)$", "$f(x, y) = (x^2, y)$", "$f(x, y) = (x + 1, y)$", "$f(x) = \\sin(x)$"],
+                                    correct: 0,
+                                    explain: "Các biểu thức phải là bậc nhất thuần nhất đối với các biến."
+                                },
+                                tips: "⚠️ Ánh xạ tuyến tính bắt buộc phải biến vectơ không thành vectơ không ($f(0) = 0$)."
+                            }
+                        ]
+                    }
+                ]
+            },
+            calculus: {
+                name: "Giải Tích 1",
+                chapters: [
+                    {
+                        id: "calc_ch1",
+                        title: "Chương 1: Hàm Số Một Biến – Giới Hạn & Liên Tục",
+                        lessons: [
+                            {
+                                id: "calc_c1_l1",
+                                title: "Bài 1: Hàm số một biến số",
+                                videoUrl: "https://www.youtube.com/embed/-WKE4klF6-A",
+                                theory: "• Tập xác định $D$: Tập các giá trị của $x$ để biểu thức $f(x)$ có nghĩa.<br>• Phân thức: mẫu khác 0. Căn bậc hai: biểu thức trong căn $\\ge 0$. Logarit $\\ln(u)$: $u > 0$.<br>• Hàm lượng giác ngược: $\\arcsin(x)$ và $\\arccos(x)$ có tập xác định $x \\in [-1, 1]$.",
+                                example: "Tìm TXĐ của $y = \\arcsin(2x - 1)$:<br>Ta cần $-1 \\le 2x - 1 \\le 1 \\iff 0 \\le 2x \\le 2 \\iff 0 \\le x \\le 1$. Vậy $D = [0, 1]$.",
+                                practiceQ: {
+                                    q: "Tập xác định của hàm số $y = \\ln(3 - x)$ là:",
+                                    options: ["$(-\\infty, 3)$", "$[3, +\\infty)$", "$(-\\infty, 3]$", "$(3, +\\infty)$"],
+                                    correct: 0,
+                                    explain: "Điều kiện biểu thức trong logarit dương: $3 - x > 0 \\iff x < 3$."
+                                },
+                                tips: "⚠️ Lưu ý điều kiện của $\\arcsin u$ và $\\arccos u$ là $-1 \\le u \\le 1$."
+                            },
+                            {
+                                id: "calc_c1_l3",
+                                title: "Bài 3: Vô cùng bé (VCB) & Giới hạn",
+                                videoUrl: "https://www.youtube.com/embed/krLN9nBAIMk",
+                                theory: "Khi $x \\to 0$, các VCB tương đương thường dùng:<br>• $\\sin x \\sim x$, $\\tan x \\sim x$, $\\arcsin x \\sim x$, $\\arctan x \\sim x$<br>• $\\ln(1+x) \\sim x$, $e^x - 1 \\sim x$, $1 - \\cos x \\sim \\frac{x^2}{2}$.",
+                                example: "Tính $\\lim_{x \\to 0} \\frac{\\ln(1 + 2x)}{\\sin 3x}$:<br>Khi $x \\to 0$, $\\ln(1+2x) \\sim 2x$ và $\\sin 3x \\sim 3x$.<br>Giới hạn $= \\lim_{x \\to 0} \\frac{2x}{3x} = \\frac{2}{3}$.",
+                                practiceQ: {
+                                    q: "Tính giới hạn $L = \\lim_{x \\to 0} \\frac{1 - \\cos 2x}{x^2}$.",
+                                    options: ["2", "1", "4", "0.5"],
+                                    correct: 0,
+                                    explain: "$1 - \\cos(2x) \\sim \\frac{(2x)^2}{2} = 2x^2$. Do đó $L = \\lim \\frac{2x^2}{x^2} = 2$."
+                                },
+                                tips: "⚠️ Chỉ được thay thế VCB tương đương cho một tích hoặc thương, KHÔNG được tùy tiện thay thế vào một hiệu nếu bị triệt tiêu hết."
+                            },
+                            {
+                                id: "calc_c1_l4",
+                                title: "Bài 4: Giới hạn dạng $1^\\infty$",
+                                videoUrl: "https://www.youtube.com/embed/J5v2YQXklIY",
+                                theory: "Dạng $1^\\infty$: $\\lim_{x \\to x_0} [u(x)]^{v(x)} = e^{\\lim_{x \\to x_0} v(x) \\cdot [u(x) - 1]}$.",
+                                example: "Tính $\\lim_{x \\to \\infty} \\left(1 + \\frac{2}{x}\\right)^x = e^{\\lim_{x \\to \\infty} x \\cdot \\left(\\frac{2}{x}\\right)} = e^2$.",
+                                practiceQ: {
+                                    q: "Tính giới hạn $L = \\lim_{x \\to 0} (1 + 3x)^{1/x}$.",
+                                    options: ["$e^3$", "$e$", "$e^{-3}$", "3"],
+                                    correct: 0,
+                                    explain: "$L = e^{\\lim_{x \\to 0} \\frac{1}{x} \\cdot (3x)} = e^3$."
+                                },
+                                tips: "⚠️ Đảm bảo phần cơ số tiến về 1 và số mũ tiến về vô cùng mới được dùng công thức mũ $e$."
+                            }
+                        ]
+                    },
+                    {
+                        id: "calc_ch2",
+                        title: "Chương 2: Đạo Hàm & Vi Phân",
+                        lessons: [
+                            {
+                                id: "calc_c2_l1",
+                                title: "Bài 1: Đạo hàm hàm một biến",
+                                videoUrl: "https://www.youtube.com/embed/_mlgZim3eus",
+                                theory: "Đạo hàm theo định nghĩa: $f'(x_0) = \\lim_{\\Delta x \\to 0} \\frac{f(x_0 + \\Delta x) - f(x_0)}{\\Delta x}$.<br>Quy tắc đạo hàm hàm hợp: $[f(u)]' = f'(u) \\cdot u'$.",
+                                example: "Tính đạo hàm của $y = \\ln(x^2 + 1)$:<br>$y' = \\frac{(x^2 + 1)'}{x^2 + 1} = \\frac{2x}{x^2 + 1}$.",
+                                practiceQ: {
+                                    q: "Đạo hàm của hàm số $y = \\arctan(2x)$ là:",
+                                    options: ["$\\frac{2}{1 + 4x^2}$", "$\\frac{1}{1 + 4x^2}$", "$\\frac{2}{\\sqrt{1 - 4x^2}}$", "$\\frac{1}{1 + 2x^2}$"],
+                                    correct: 0,
+                                    explain: "$(\\arctan u)' = \\frac{u'}{1+u^2} = \\frac{2}{1+(2x)^2} = \\frac{2}{1+4x^2}$."
+                                },
+                                tips: "⚠️ Đừng quên nhân thêm đạo hàm của hàm hợp bên trong $u'$."
+                            }
+                        ]
+                    },
+                    {
+                        id: "calc_ch3",
+                        title: "Chương 3: Tích Phân Suy Rộng",
+                        lessons: [
+                            {
+                                id: "calc_c3_l1",
+                                title: "Bài 1: Tính tích phân suy rộng",
+                                videoUrl: "https://www.youtube.com/embed/2srXQ-EtdgM",
+                                theory: "Tích phân suy rộng loại 1 (cận vô cực): $\\int_a^{+\\infty} f(x)\\,dx = \\lim_{t \\to +\\infty} \\int_a^t f(x)\\,dx$. Nếu giới hạn hữu hạn thì tích phân hội tụ, ngược lại phân kỳ.",
+                                example: "$\\int_1^{+\\infty} \\frac{1}{x^2}\\,dx = \\lim_{t \\to \\infty} \\left[ -\\frac{1}{x} \\right]_1^t = \\lim_{t \\to \\infty} \\left(1 - \\frac{1}{t}\\right) = 1$ (Hội tụ).",
+                                practiceQ: {
+                                    q: "Tích phân $\\int_1^{+\\infty} \\frac{1}{x^\\alpha}\\,dx$ hội tụ khi và chỉ khi:",
+                                    options: ["$\\alpha > 1$", "$\\alpha < 1$", "$\\alpha \\ge 1$", "$\\alpha > 0$"],
+                                    correct: 0,
+                                    explain: "Tích phân suy rộng cơ bản loại 1 trên $[1, +\\infty)$ hội tụ $\\iff \\alpha > 1$."
+                                },
+                                tips: "⚠️ Phân biệt với loại 2 trên $(0, 1]$ hội tụ khi $\\alpha < 1$."
+                            }
+                        ]
+                    },
+                    {
+                        id: "calc_ch4",
+                        title: "Chương 4: Chuỗi Số",
+                        lessons: [
+                            {
+                                id: "calc_c4_l1",
+                                title: "Bài 1: Khái niệm chuỗi số",
+                                videoUrl: "https://www.youtube.com/embed/9PqZ6TRD-BU",
+                                theory: "Chuỗi số $\\sum_{n=1}^\\infty u_n$.<br>• Điều kiện cần để chuỗi hội tụ: $\\lim_{n \\to \\infty} u_n = 0$.<br>• Nếu $\\lim_{n \\to \\infty} u_n \\ne 0$ thì chuỗi <strong>chắc chắn phân kỳ</strong>.",
+                                example: "Xét chuỗi $\\sum_{n=1}^\\infty \\frac{n}{2n+1}$. Vì $\\lim_{n \\to \\infty} \\frac{n}{2n+1} = \\frac{1}{2} \\ne 0 \\implies$ Chuỗi phân kỳ.",
+                                practiceQ: {
+                                    q: "Khẳng định nào sau đây là đúng về chuỗi số $\\sum_{n=1}^\\infty u_n$?",
+                                    options: [
+                                        "Nếu $\\lim u_n \\ne 0$ thì chuỗi phân kỳ",
+                                        "Nếu $\\lim u_n = 0$ thì chuỗi luôn luôn hội tụ",
+                                        "Chuỗi số dương luôn luôn hội tụ",
+                                        "Chuỗi điều hòa $\\sum \\frac{1}{n}$ hội tụ"
+                                    ],
+                                    correct: 0,
+                                    explain: "$\\lim u_n = 0$ chỉ là điều kiện CẦN, không đủ. Ví dụ $\\sum 1/n$ có $\\lim 1/n = 0$ nhưng vẫn phân kỳ."
+                                },
+                                tips: "⚠️ Bẫy kinh điển: Thấy $\\lim u_n = 0$ đã vội kết luận chuỗi hội tụ là hoàn toàn sai!"
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // --- 2. TRAPS DATA ---
+
+        let calcCurrentLesson = null;
+        let calcCompleted = JSON.parse(localStorage.getItem('utc_calc_completed') || '{}');
+
+        function getCalculusCourse() {
+            return COURSES_DATA.calculus || { chapters: [] };
+        }
+
+        function showCalculusCourse() {
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+            const sec = document.getElementById('sec-calculus');
+            if (sec) sec.classList.remove('hidden');
+            document.querySelectorAll('header nav button').forEach(b => b.classList.remove('nav-btn-active'));
+            const btn = document.getElementById('nav-calculus');
+            if (btn) btn.classList.add('nav-btn-active');
+            renderCalculusSyllabus();
+            const first = findFirstCalculusLesson();
+            if (first && !calcCurrentLesson) loadCalculusLesson(first.chapterIndex, first.lessonIndex);
+            else if (calcCurrentLesson) loadCalculusLesson(calcCurrentLesson.chapterIndex, calcCurrentLesson.lessonIndex);
+        }
+
+        function backToLinearAlgebra() {
+            const formulas = document.getElementById('sec-formulas');
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+            if (formulas) formulas.classList.remove('hidden');
+            document.querySelectorAll('header nav button').forEach(b => b.classList.remove('nav-btn-active'));
+            const btn = document.getElementById('nav-formulas');
+            if (btn) btn.classList.add('nav-btn-active');
+            if (typeof renderFormulas === 'function') renderFormulas();
+        }
+
+        function findFirstCalculusLesson() {
+            const c = getCalculusCourse();
+            for (let ci = 0; ci < c.chapters.length; ci++) if (c.chapters[ci].lessons?.length) return {chapterIndex: ci, lessonIndex: 0};
+            return null;
+        }
+
+        function renderCalculusSyllabus(filter='') {
+            const box = document.getElementById('calc-syllabus');
+            if (!box) return;
+            const q = filter.trim().toLowerCase();
+            const c = getCalculusCourse();
+            let total = 0, done = 0;
+            c.chapters.forEach(ch => ch.lessons?.forEach((_,li) => { total++; if (calcCompleted[`${c.chapters.indexOf(ch)}-${li}`]) done++; }));
+            const prog = document.getElementById('calc-progress');
+            if (prog) prog.textContent = `${done}/${total}`;
+            box.innerHTML = '';
+            c.chapters.forEach((ch, ci) => {
+                const matches = !q || ch.title.toLowerCase().includes(q) || ch.lessons.some(l => `${l.title} ${l.description||''}`.toLowerCase().includes(q));
+                if (!matches) return;
+                const wrap = document.createElement('div');
+                wrap.className = 'border border-stone-200 rounded-lg overflow-hidden';
+                wrap.innerHTML = `<div class="bg-stone-50 px-3 py-2 font-bold text-sm text-stone-800">${ch.title}</div>`;
+                const list = document.createElement('div'); list.className='p-2 space-y-1';
+                ch.lessons.forEach((lesson,li) => {
+                    if (q && !(ch.title+' '+lesson.title+' '+(lesson.description||'')).toLowerCase().includes(q)) return;
+                    const b=document.createElement('button');
+                    b.className='w-full text-left px-3 py-2 rounded-md text-sm hover:bg-indigo-50 transition '+(calcCurrentLesson?.chapterIndex===ci&&calcCurrentLesson?.lessonIndex===li?'bg-indigo-100 text-indigo-800 font-semibold':'text-stone-700');
+                    b.innerHTML=`${calcCompleted[`${ci}-${li}`]?'✅ ':''}${lesson.title}`;
+                    b.onclick=()=>loadCalculusLesson(ci,li); list.appendChild(b);
+                });
+                wrap.appendChild(list); box.appendChild(wrap);
+            });
+        }
+
+        function searchCalculusLessons() { renderCalculusSyllabus(document.getElementById('calc-search')?.value || ''); }
+
+        function loadCalculusLesson(ci, li) {
+            const c=getCalculusCourse(), ch=c.chapters[ci], lesson=ch?.lessons?.[li];
+            if (!lesson) return;
+            calcCurrentLesson={chapterIndex:ci,lessonIndex:li};
+            const p=document.getElementById('calc-player');
+            if (!p) return;
+            const theory=lesson.theory||lesson.content||lesson.description||'';
+            const examples=lesson.examples||lesson.example||[];
+            const exercises=lesson.exercises||lesson.practice||[];
+            const tips=lesson.tips||lesson.keyTakeaways||[];
+            const arr=v=>Array.isArray(v)?v:(v?[v]:[]);
+            p.innerHTML=`<div class="space-y-5">
+                <div><div class="text-xs text-indigo-600 font-semibold mb-1">${ch.title}</div><h3 class="text-2xl font-bold text-stone-900">${lesson.title}</h3><p class="text-stone-500 mt-1">${lesson.description||''}</p></div>
+                ${lesson.videoUrl ? `<div class="bg-red-50 rounded-xl border border-red-200 p-4"><div class="flex items-center justify-between gap-3 flex-wrap"><div><h4 class="font-bold text-red-800">🎥 Video bài giảng</h4><p class="text-sm text-red-700 mt-1">Xem bài giảng trực tiếp trên YouTube.</p></div><a href="${lesson.videoUrl.replace('/embed/','/watch?v=')}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700">▶ Mở video YouTube</a></div></div>` : ''}
+                <div class="bg-stone-50 rounded-xl border border-stone-200 p-4"><h4 class="font-bold mb-2">📖 Lý thuyết</h4><div id="calc-theory" class="prose prose-sm max-w-none text-stone-700">${theory}</div></div>
+                <div class="bg-emerald-50 rounded-xl border border-emerald-200 p-4"><h4 class="font-bold mb-2">🧮 Ví dụ</h4><div class="space-y-3">${arr(examples).map((x,i)=>`<div class="bg-white rounded-lg p-3 border border-emerald-100"><b>Ví dụ ${i+1}:</b><div class="mt-1">${typeof x==='string'?x:(x.question||x.problem||'')}</div>${x.solution?`<div class="mt-2 text-stone-600">${x.solution}</div>`:''}</div>`).join('')}</div></div>
+                <div class="bg-amber-50 rounded-xl border border-amber-200 p-4"><h4 class="font-bold mb-2">✍️ Bài tập luyện</h4><div class="space-y-2">${arr(exercises).map((x,i)=>`<div class="bg-white rounded-lg p-3 border border-amber-100">${i+1}. ${typeof x==='string'?x:(x.question||x.problem||'')}</div>`).join('') || '<p class="text-sm text-stone-500">Bài học này chưa có dữ liệu bài tập riêng.</p>'}</div></div>
+                <div class="bg-indigo-50 rounded-xl border border-indigo-200 p-4"><h4 class="font-bold mb-2">💡 Mẹo / cần nhớ</h4><ul class="list-disc pl-5 space-y-1">${arr(tips).map(x=>`<li>${typeof x==='string'?x:(x.text||x.title||'')}</li>`).join('') || '<li>Ôn lại công thức và tự làm lại ví dụ trước khi sang bài tiếp.</li>'}</ul></div>
+                <div class="flex justify-end"><button onclick="completeCalculusLesson()" class="px-4 py-2 rounded-lg bg-indigo-700 text-white hover:bg-indigo-800">${calcCompleted[`${ci}-${li}`]?'✅ Đã hoàn thành':'✓ Đánh dấu đã học'}</button></div>
+            </div>`;
+            renderCalculusSyllabus(document.getElementById('calc-search')?.value || '');
+            if (typeof refreshMath==='function') refreshMath(p);
+            p.scrollIntoView({behavior:'smooth',block:'start'});
+        }
+
+        function completeCalculusLesson() {
+            if (!calcCurrentLesson) return;
+            const key=`${calcCurrentLesson.chapterIndex}-${calcCurrentLesson.lessonIndex}`;
+            calcCompleted[key]=true; localStorage.setItem('utc_calc_completed',JSON.stringify(calcCompleted));
+            loadCalculusLesson(calcCurrentLesson.chapterIndex,calcCurrentLesson.lessonIndex);
+        }
+    </script>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- LATEX PARSER & AUTO-FORMATTER HELPER ---
+        function formatMathText(input) {
+            if (input === null || input === undefined) return '';
+            let text = String(input);
+
+            // Convert display $$ ... $$ into \[ ... \]
+            text = text.replace(/\$\$([\s\S]+?)\$\$/g, '\\[$1\\]');
+
+            // Convert inline $ ... $ into \( ... \)
+            text = text.replace(/\$([^\$\n]+?)\$/g, '\\($1\\)');
+
+            // Auto-wrap matrix / cases environments into display math \[ ... \] if not wrapped
+            text = text.replace(/(?<!\\\(|\\\[)(\\begin\{(?:pmatrix|vmatrix|matrix|cases)\}[\s\S]+?\\end\{(?:pmatrix|vmatrix|matrix|cases)\})(?!\\\)|\\\])/g, '\\[$1\\]');
+
+            return text;
+        }
+
+        // --- MATH RE-RENDER HELPER ---
+        function refreshMath(targetElem = document.body) {
+            if (!targetElem) return;
+
+            const executeRender = () => {
+                if (typeof renderMathInElement === 'function') {
+                    try {
+                        renderMathInElement(targetElem, {
+                            delimiters: [
+                                {left: '\\[', right: '\\]', display: true},
+                                {left: '$$', right: '$$', display: true},
+                                {left: '\\(', right: '\\)', display: false},
+                                {left: '$', right: '$', display: false}
+                            ],
+                            ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+                            throwOnError: false
+                        });
+                    } catch (err) {
+                        console.error("KaTeX rendering error:", err);
+                    }
+                }
+            };
+
+            setTimeout(executeRender, 20);
+        }
+
+        // --- CHAPTER STATE MANAGEMENT ---
+        let openChapters = {
+            ch1: true,
+            ch2: false,
+            ch3: false
+        };
+
+        let ch1SubTab = 'part1'; // 'part1', 'part2', 'part3', 'part4'
+
+        const CHAPTERS_METADATA = [
+            {
+                id: 'ch1',
+                level: 'Mức 1 · Cơ bản',
+                badgeIcon: '📘',
+                chapNumber: 'MỨC 1 · CHƯƠNG 1',
+                title: 'ĐẠI SỐ TUYẾN TÍNH – CHƯƠNG 1: MA TRẬN VÀ ĐỊNH THỨC',
+                subtitle: 'Khái niệm ma trận, các ma trận đặc biệt, phép toán ma trận, tích ma trận & định thức',
+                countInfo: '4 Phần lý thuyết đầy đủ + Ví dụ'
+            },
+            {
+                id: 'ch2',
+                level: 'Mức 2 · Trung bình',
+                badgeIcon: '📗',
+                chapNumber: 'MỨC 2 · CHƯƠNG 2',
+                title: 'CHƯƠNG 2: HỆ PHƯƠNG TRÌNH TUYẾN TÍNH VÀ MA TRẬN',
+                subtitle: 'Hệ phương trình tổng quát, quy tắc Cramer, Định lý Kronecker-Capelli, phương pháp Gauss',
+                countInfo: '3 Phần lý thuyết + Ví dụ'
+            },
+            {
+                id: 'ch3',
+                level: 'Mức 3 · Vận dụng',
+                badgeIcon: '📙',
+                chapNumber: 'MỨC 3 · CHƯƠNG 3',
+                title: 'CHƯƠNG 3: KHÔNG GIAN VECTƠ & BẪY NÂNG CAO',
+                subtitle: 'Độc lập tuyến tính, phụ thuộc tuyến tính, cơ sở, chiều và tọa độ vectơ',
+                countInfo: '3 Phần lý thuyết + Ví dụ'
+            }
+        ];
+
+        // --- DATA STORE FOR TRAPS & QUIZ ---
+        const TRAPS_DATA = [
+            {
+                id: 1,
+                chapter: 'ch1',
+                title: "1. Nhầm lẫn công thức Định thức ma trận phụ hợp P_A (Chương 1)",
+                trapSummary: "Nghĩ rằng \\(\\det(P_A) = \\frac{1}{\\det A}\\) hoặc \\(\\det(P_A) = \\det(A)\\).",
+                correctRule: "\\det(P_A) = (\\det A)^{n-1}",
+                wrongReason: "Lầm tưởng ma trận phụ hợp là ma trận nghịch đảo \\(A^{-1}\\). Thực ra \\(A^{-1} = \\frac{1}{\\det A} P_A^T\\), do đó \\(\\det(P_A) = (\\det A)^{n-1}\\).",
+                exampleText: "Cho \\(A\\) cấp 3 có \\(\\det(A) = 4\\). Tính \\(\\det(P_A)\\):",
+                wrongAnswer: "Sai: \\(\\det(P_A) = 1/4\\) hoặc \\(4\\).",
+                rightAnswer: "Đúng: \\(\\det(P_A) = 4^{3-1} = 4^2 = 16\\)."
+            },
+            {
+                id: 2,
+                chapter: 'ch1',
+                title: "2. Quên mũ n khi rút hằng số k ra khỏi det(kA) (Chương 1)",
+                trapSummary: "Ghi \\(\\det(kA) = k \\cdot \\det(A)\\) như tính chất số học thông thường.",
+                correctRule: "\\det(kA) = k^n \\cdot \\det(A)",
+                wrongReason: "Nhân hằng số \\(k\\) vào ma trận nghĩa là nhân \\(k\\) vào TẤT CẢ \\(n\\) hàng. Khi rút \\(k\\) ra từ \\(n\\) hàng của định thức thì phải lũy thừa \\(n\\).",
+                exampleText: "Cho ma trận \\(A\\) cấp 4 có \\(\\det(A) = 3\\). Tính \\(\\det(2A)\\):",
+                wrongAnswer: "Sai: \\(\\det(2A) = 2 \\times 3 = 6\\).",
+                rightAnswer: "Đúng: \\(\\det(2A) = 2^4 \\times 3 = 16 \\times 3 = 48\\)."
+            },
+            {
+                id: 3,
+                chapter: 'ch1',
+                title: "3. Biện luận hạng r(A) chứa tham số m (Chương 1)",
+                trapSummary: "Cho \\(m = c\\) để 1 hàng bằng 0 rồi phán ngay hạng bằng 2 mà quên kiểm tra các hàng khác.",
+                correctRule: "Cho \\(m = c \\to\\) Hàng chứa \\(m\\) biến thành toàn 0 \\(\\to\\) Hạng bị tụt xuống!",
+                wrongReason: "Khi biến đổi về bậc thang, nếu hàng chứa \\((m-c)\\) bị triệt tiêu thành toàn 0 khi \\(m=c\\), thì số hàng khác 0 giảm đi. Muốn GIỮ HẠNG CAO thì phần tử chứa \\(m\\) phải KHÁC 0 (\\(m \\ne c\\)).",
+                exampleText: "Biến đổi bậc thang ra \\(\\begin{pmatrix} 1 & 2 & -1 \\\\ 0 & 0 & m+3 \\\\ 0 & 0 & 0 \\end{pmatrix}\\). Tìm \\(m\\) để hạng \\(r(A) = 2\\):",
+                wrongAnswer: "Sai: \\(m = -3\\).",
+                rightAnswer: "Đúng: Muốn \\(r(A) = 2\\) thì hàng 2 phải khác 0 \\(\\iff m + 3 \\ne 0 \\iff m \\ne -3\\)."
+            },
+            {
+                id: 4,
+                chapter: 'ch2',
+                title: "4. Nhầm lẫn điều kiện Vô nghiệm vs Vô số nghiệm (Chương 2)",
+                trapSummary: "Nghĩ rằng \\(r(A) < n\\) là hệ vô nghiệm.",
+                correctRule: "r(A) < r(\\overline{A}) \\iff \\text{Vô nghiệm} \\quad | \\quad r(A) = r(\\overline{A}) < n \\iff \\text{Vô số nghiệm}",
+                wrongReason: "Hệ chỉ VÔ NGHIỆM khi xuất hiện hàng dạng \\([0 \\ 0 \\ \\dots \\ 0 \\ | \\ c]\\) với \\(c \\ne 0\\). Còn nếu \\(r(A) = r(\\overline{A})\\) thì hệ CÓ NGHIỆM.",
+                exampleText: "Hệ 3 phương trình 4 ẩn số có \\(r(A) = r(\\overline{A}) = 3 < 4\\):",
+                wrongAnswer: "Sai: Kết luận hệ vô nghiệm.",
+                rightAnswer: "Đúng: Hệ có vô số nghiệm phụ thuộc \\(4 - 3 = 1\\) ẩn tự do."
+            },
+            {
+                id: 5,
+                chapter: 'ch1',
+                title: "5. Khẳng định (A + B)^2 = A^2 + 2AB + B^2 (Chương 1)",
+                trapSummary: "Áp dụng hằng đẳng thức số học cho ma trận.",
+                correctRule: "(A + B)^2 = A^2 + AB + BA + B^2",
+                wrongReason: "Phép nhân ma trận KHÔNG có tính chất giao hoán (\\(AB \\ne BA\\)). Do đó \\(AB + BA\\) không thể thu gọn thành \\(2AB\\) trừ khi đề cho sẵn \\(AB = BA\\).",
+                exampleText: "Khẳng định \\((A-B)^2 = A^2 - 2AB + B^2\\) đúng khi nào?",
+                wrongAnswer: "Sai: Luôn đúng với mọi ma trận vuông \\(A, B\\).",
+                rightAnswer: "Đúng: Chỉ đúng khi và chỉ khi \\(AB = BA\\)."
+            },
+            {
+                id: 6,
+                chapter: 'ch3',
+                title: "6. Nhầm lẫn số nghiệm cơ bản và Số chiều không gian (Chương 3)",
+                trapSummary: "Nghĩ rằng số chiều không gian nghiệm bằng hạng ma trận \\(r(A)\\).",
+                correctRule: "\\dim(V) = n - r(A)",
+                wrongReason: "Số chiều của không gian nghiệm hệ phương trình tuyến tính thuần nhất \\(AX=0\\) bằng số ẩn \\(n\\) trừ đi hạng ma trận hệ số \\(r(A)\\).",
+                exampleText: "Hệ 4 phương trình 6 ẩn có \\(r(A) = 3\\). Số chiều không gian nghiệm là:",
+                wrongAnswer: "Sai: \\(\\dim = 3\\).",
+                rightAnswer: "Đúng: \\(\\dim = 6 - 3 = 3\\)."
+            }
+        ];
+
+        const BASE_QUIZ_DATA = [
+            {
+                q: "Cho ma trận vuông \\(A\\) cấp 3 thỏa mãn \\(\\det(A) = -2\\). Tính định thức \\(\\det(3A^{-1})\\).",
+                options: ["\\(-3\\)", "\\(-\\frac{27}{2}\\)", "\\(\\frac{27}{2}\\)", "\\(-27\\)"],
+                correct: 1,
+                trapNotice: "⚠️ Bẫy \\(k^n\\): Ma trận cấp 3 nên khi đưa 3 ra ngoài phải nâng lên \\(3^3 = 27\\). Áp dụng \\(\\det(A^{-1}) = \\frac{1}{\\det A} = -1/2\\). Ta có \\(27 \\times (-1/2) = -27/2\\).",
+                explain: "Ta có công thức \\(\\det(kA) = k^n \\det(A)\\) với \\(n=3\\). Do đó \\(\\det(3A^{-1}) = 3^3 \\cdot \\det(A^{-1}) = 27 \\cdot \\frac{1}{\\det(A)} = 27 \\cdot \\left(-\\frac{1}{2}\\right) = -\\frac{27}{2}\\)."
+            },
+            {
+                q: "Cho hai ma trận \\(A_{1 \\times 2} = \\begin{pmatrix} 2 & 3 \\end{pmatrix}\\) và \\(B_{2 \\times 2} = \\begin{pmatrix} 1 & 4 \\\\ 5 & -1 \\end{pmatrix}\\). Kích thước và kết quả của tích \\(A \\cdot B\\) là:",
+                options: [
+                    "Kích thước \\(2 \\times 2\\), kết quả \\(\\begin{pmatrix} 2 & 8 \\\\ 15 & -3 \\end{pmatrix}\\)",
+                    "Kích thước \\(1 \\times 2\\), kết quả \\(\\begin{pmatrix} 17 & 5 \\end{pmatrix}\\)",
+                    "Không thể nhân được hai ma trận này",
+                    "Kích thước \\(2 \\times 1\\), kết quả \\(\\begin{pmatrix} 17 \\\\ 5 \\end{pmatrix}\\)"
+                ],
+                correct: 1,
+                trapNotice: "⚠️ Quy tắc kích thước nhân ma trận: \\((1 \\times 2) \\times (2 \\times 2) \\to (1 \\times 2)\\). Phần tử 1: \\(2(1) + 3(5) = 17\\); Phần tử 2: \\(2(4) + 3(-1) = 5\\).",
+                explain: "Số cột của A bằng 2, số hàng của B bằng 2 nên nhân được. Kích thước kết quả là \\(1 \\times 2\\). Tích \\(C = [2(1)+3(5) \\quad 2(4)+3(-1)] = [17 \\quad 5]\\)."
+            },
+            {
+                q: "Cho ma trận vuông \\(A\\) cấp 4 thỏa mãn \\(\\det(A) = -2\\). Tính định thức ma trận phụ hợp \\(P_A\\) (ký hiệu khác \\(\\text{adj}(A)\\)).",
+                options: ["16", "-8", "8", "\\(-\\frac{1}{2}\\)"],
+                correct: 1,
+                trapNotice: "⚠️ Bẫy số mũ \\((n-1)\\): Ma trận cấp 4 thì \\(n=4 \\implies\\) số mũ là \\(4-1=3\\). Âm 2 mũ 3 vẫn ra số âm: \\((-2)^3 = -8\\).",
+                explain: "Công thức định thức ma trận phụ hợp cấp \\(n\\): \\(\\det(P_A) = (\\det A)^{n-1}\\). Với \\(n=4\\) ta có \\(\\det(P_A) = (-2)^{4-1} = (-2)^3 = -8\\)."
+            },
+            {
+                q: "Tìm tất cả các giá trị của tham số \\(m\\) để ma trận \\(A = \\begin{pmatrix} 1 & 2 & -1 \\\\ 2 & 4 & -2 \\\\ 3 & 6 & m \\end{pmatrix}\\) có hạng \\(r(A) = 2\\).",
+                options: ["\\(m = -3\\)", "\\(m \\ne -3\\)", "\\(m = 3\\)", "Không tồn tại \\(m\\)"],
+                correct: 1,
+                trapNotice: "⚠️ Bẫy logic tụt hạng: Hàng 2 bằng \\(2 h_1\\) nên tự triệt tiêu về toàn 0. Hàng 3 biến đổi \\(h_3 - 3h_1\\) thành \\((0, 0, m+3)\\). Muốn giữ hạng 2 thì hàng 3 KHÔNG ĐƯỢC biến thành 0 \\(\\iff m+3 \\ne 0 \\iff m \\ne -3\\).",
+                explain: "Biến đổi \\(h_2 \\to h_2 - 2h_1\\) ra \\([0,0,0]\\). Biến đổi \\(h_3 \\to h_3 - 3h_1\\) ra \\([0,0,m+3]\\). Để ma trận có 2 hàng khác 0 thì \\(m+3 \\ne 0 \\iff m \\ne -3\\)."
+            },
+            {
+                q: "Cho hệ phương trình tuyến tính gồm 3 phương trình và 5 ẩn số có ma trận hệ số \\(A\\). Biết rằng các hàng của \\(A\\) độc lập tuyến tính (\\(r(A) = 3\\)). Số nghiệm cơ bản trong hệ nghiệm cơ bản của hệ thuần nhất \\(AX = 0\\) là:",
+                options: ["3", "5", "2", "1"],
+                correct: 2,
+                trapNotice: "⚠️ Bẫy công thức nghiệm cơ bản: Số nghiệm cơ bản \\(= n - r(A) = 5 - 3 = 2\\). Nhớ lấy (Số ẩn) trừ (Hạng).",
+                explain: "Theo lý thuyết hệ phương trình tuyến tính thuần nhất, số nghiệm độc lập tuyến tính (nghiệm cơ bản) bằng \\(k = n - r(A) = 5 - 3 = 2\\)."
+            },
+            {
+                q: "Theo định lý Kronecker - Capelli, hệ phương trình \\(AX = B\\) VÔ NGHIỆM khi và chỉ khi:",
+                options: [
+                    "\\(r(A) = r(\\overline{A}) < n\\)",
+                    "\\(r(A) < r(\\overline{A})\\)",
+                    "\\(r(A) = r(\\overline{A}) = n\\)",
+                    "\\(\\det(A) = 0\\)"
+                ],
+                correct: 1,
+                trapNotice: "⚠️ Bẫy lý thuyết: Vô nghiệm khi và chỉ khi hạng ma trận hệ số nhỏ hơn hạng ma trận mở rộng \\(r(A) < r(\\overline{A})\\). Đừng nhầm với \\(r(A) < n\\) (đó là vô số nghiệm).",
+                explain: "Định lý Kronecker - Capelli khẳng định hệ \\(AX=B\\) có nghiệm \\(\\iff r(A) = r(\\overline{A})\\). Vậy hệ VÔ NGHIỆM \\(\\iff r(A) < r(\\overline{A})\\)."
+            },
+            {
+                q: "Cho hai ma trận \\(A, B\\) khả nghịch cùng cấp \\(n\\). Khẳng định nào sau đây KHÔNG LUÔN ĐÚNG?",
+                options: [
+                    "\\((AB)^{-1} = B^{-1} A^{-1}\\)",
+                    "\\(\\det(AB) = \\det(A) \\cdot \\det(B)\\)",
+                    "\\((A + B)^{-1} = A^{-1} + B^{-1}\\)",
+                    "\\((A^T)^{-1} = (A^{-1})^T\\)"
+                ],
+                correct: 2,
+                trapNotice: "⚠️ Bẫy nghịch đảo của tổng: Tuyệt đối KHÔNG BẮT CHƯỚC số học \\((A+B)^{-1} \\ne A^{-1} + B^{-1}\\)!",
+                explain: "Nghịch đảo của tổng không có tính chất phân phối. Phương án \\((A+B)^{-1} = A^{-1} + B^{-1}\\) là khẳng định SAI."
+            },
+            {
+                q: "Tìm tất cả các giá trị của tham số \\(m\\) để hệ phương trình sau có VÔ SỐ NGHIỆM: \\(\\begin{cases} x_1 + 2x_2 = 3 \\\\ 2x_1 + 4x_2 = m \\end{cases}\\).",
+                options: ["\\(m = 6\\)", "\\(m \\ne 6\\)", "\\(m = 3\\)", "Với mọi \\(m\\)"],
+                correct: 0,
+                trapNotice: "⚠️ Biến đổi hàng: Lấy phương trình 2 trừ 2 lần phương trình 1 thu được \\(0x_1 + 0x_2 = m - 6\\). Để có vô số nghiệm thì \\(m - 6 = 0 \\iff m = 6\\).",
+                explain: "Ma trận hệ số mở rộng \\(\\overline{A} = \\begin{pmatrix} 1 & 2 & | & 3 \\\\ 2 & 4 & | & m \\end{pmatrix} \\to \\begin{pmatrix} 1 & 2 & | & 3 \\\\ 0 & 0 & | & m - 6 \\end{pmatrix}\\). Để hệ có vô số nghiệm thì \\(r(A) = r(\\overline{A}) = 1 < 2 \\iff m - 6 = 0 \\iff m = 6\\)."
+            },
+            {
+                q: "Cho ma trận \\(A\\) vuông cấp 2 thỏa mãn \\(A^2 - 3A + 2I = 0\\). Ma trận nghịch đảo \\(A^{-1}\\) được biểu diễn là:",
+                options: [
+                    "\\(A^{-1} = 3I - A\\)",
+                    "\\(A^{-1} = \\frac{3}{2}I - \\frac{1}{2}A\\)",
+                    "\\(A^{-1} = \\frac{1}{2}A - \\frac{3}{2}I\\)",
+                    "\\(A^{-1} = 2I - 3A\\)"
+                ],
+                correct: 1,
+                trapNotice: "⚠️ Bẫy rút gọn: \\(A^2 - 3A + 2I = 0 \\iff 2I = 3A - A^2 \\iff I = A \\left(\\frac{3}{2}I - \\frac{1}{2}A\\right)\\). Nhìn kỹ dấu cộng trừ!",
+                explain: "Từ \\(A^2 - 3A + 2I = 0 \\implies 2I = 3A - A^2 = A(3I - A) \\implies I = A \\cdot \\left(\\frac{3}{2}I - \\frac{1}{2}A\\right)\\). Theo định nghĩa ma trận nghịch đảo, \\(A^{-1} = \\frac{3}{2}I - \\frac{1}{2}A\\)."
+            },
+            {
+                q: "Cho ma trận \\(A\\) vuông cấp 3 có \\(\\det(A) = -3\\). Tính \\(\\det(A^T \\cdot A)\\).",
+                options: ["\\(-9\\)", "9", "27", "\\(-27\\)"],
+                correct: 1,
+                trapNotice: "⚠️ Bẫy bình phương âm: \\(\\det(A^T \\cdot A) = \\det(A^T) \\cdot \\det(A) = (\\det A)^2 = (-3)^2 = 9\\). Bình phương luôn ra số dương!",
+                explain: "Áp dụng \\(\\det(AB) = \\det A \\cdot \\det B\\) và \\(\\det(A^T) = \\det(A)\\), ta có \\(\\det(A^T \\cdot A) = \\det(A^T) \\cdot \\det(A) = (\\det A)^2 = (-3)^2 = 9\\)."
+            }
+        ];
+
+        // --- NGÂN HÀNG CÂU HỎI ĐỘNG: tạo nhiều biến thể để mỗi lượt làm có bộ câu khác ---
+        function buildDynamicQuizBank(base) {
+            const bank = [...base];
+            const push = (q, options, correct, trapNotice, explain) => bank.push({q, options, correct, trapNotice, explain});
+            for (let i = 0; i < 8; i++) {
+                const n = 2 + (i % 3), d = (i % 2 ? -1 : 1) * (i + 2), k = i + 2;
+                const ans = Math.pow(k, n) / d;
+                const opts = [ans, -ans, ans * 2, ans / 2];
+                const correct = 0;
+                push(`Cho ma trận vuông A cấp ${n} thỏa mãn \\(\\det(A) = ${d}\\). Tính \\(\\det(${k}A^{-1})\\).`, opts.map(String), correct,
+                    `⚠️ Ma trận cấp ${n} nên \\(\\det(${k}A^{-1})=${k}^${n}\\det(A^{-1})=${k}^${n}/${d}=${ans}\\).`,
+                    `Dùng \\(\\det(kA)=k^n\\det(A)\\) và \\(\\det(A^{-1})=1/\\det(A)\\).`);
+            }
+            for (let i = 0; i < 8; i++) {
+                const a=1+i, b=2+i, c=2+i, d=3+i, e=4-i, f=1+i;
+                const x=a*c+b*e, y=a*d+b*f;
+                const opts=[`\\begin{pmatrix} ${x} & ${y} \\end{pmatrix}`, `\\begin{pmatrix} ${y} & ${x} \\end{pmatrix}`, `\\begin{pmatrix} ${x} \\ ${y} \\end{pmatrix}`, `\\begin{pmatrix} ${a+c} & ${b+d} \\end{pmatrix}`];
+                push(`Cho A=\\(\\begin{pmatrix}${a}&${b}\\end{pmatrix}\\), B=\\(\\begin{pmatrix}${c}&${d}\\\\${e}&${f}\\end{pmatrix}\\). Tính A B.`, opts, 0,
+                    `⚠️ Kết quả có cấp \\(1\\times2\\): nhân hàng của A với từng cột của B.`,
+                    `\\(${a}\\cdot${c}+${b}\\cdot${e}=${x}\\), \\(${a}\\cdot${d}+${b}\\cdot${f}=${y}\\).`);
+            }
+            for (let i = 0; i < 8; i++) {
+                const m = i-2;
+                const target = m !== -3 ? `m \\ne -3` : `m=-3`;
+                const correct = m !== -3 ? 0 : 1;
+                push(`Với A=\\(\\begin{pmatrix}1&2&-1\\\\2&4&-2\\\\3&6&m\\end{pmatrix}\\), điều kiện để \\(r(A)=2\\) là gì?`, [`\\(${target}\\)`, `\\(m=-3\\)`, `\\(m=3\\)`, `Không tồn tại`], correct,
+                    `Sau khử Gauss, hàng cuối có dạng \\(0,0,m+3\\). Muốn hạng bằng 2 thì cần \\(m+3\\ne0\\).`,
+                    `Do đó điều kiện tổng quát là \\(m\\ne-3\\).`);
+            }
+            for (let i = 0; i < 8; i++) {
+                const c=2+i%4, d=1+i%3;
+                push(`Cho \\(A^2-${c}A+${d}I=0\\). Nếu A khả nghịch, biểu diễn \\(A^{-1}\\) theo A và I.`,
+                    [`\\(\\frac{${c}}{${d}}I-\\frac{1}{${d}}A\\)`,`\\(\\frac{${c}}{${d}}I+\\frac{1}{${d}}A\\)`,`\\(${d}I-${c}A\\)`,`\\(A-${c}I\\)`],0,
+                    `Từ phương trình: \\(${d}I=${c}A-A^2=A(${c}I-A)\\).`,
+                    `Chia hai vế cho \\(${d}\\) theo nghĩa nhân với \\(A^{-1}\\): \\(A^{-1}=\\frac{${c}}{${d}}I-\\frac{1}{${d}}A\\).`);
+            }
+            for (let i = 0; i < 8; i++) {
+                const d=i+2, sign=i%2?-1:1;
+                const ans=d*d;
+                push(`Cho ma trận vuông A có \\(\\det(A)=${sign*d}\\). Tính \\(\\det(A^T A)\\).`, [`${ans}`, `-${ans}`, `${d}`, `0`],0,
+                    `\\(\\det(A^TA)=\\det(A^T)\\det(A)=(\\det A)^2\\).`,
+                    `Vì \\(\\det(A)=${sign*d}\\), nên kết quả là \\(${ans}\\).`);
+            }
+            for (let i = 0; i < 8; i++) {
+                const n=4+i%4, r=1+i%3, dim=n-r;
+                push(`Hệ thuần nhất có ${n} ẩn và ma trận hệ số có hạng ${r}. Số nghiệm cơ bản là bao nhiêu?`, [`${dim}`, `${n}`, `${r}`, `${n+r}`],0,
+                    `⚠️ Số nghiệm cơ bản bằng số ẩn trừ hạng: \\(n-r\\).`,
+                    `\\(${n}-${r}=${dim}\\).`);
+            }
+            return bank;
+        }
+
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i=a.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+            return a;
+        }
+
+        const QUIZ_TOPIC_RULES = [
+            ['Định thức & ma trận nghịch đảo', /định thức|det\(|det\{|A\^\{-1\}|nghịch đảo/i],
+            ['Phép toán & tích ma trận', /tích \(A|\bAB\b|nhân ma trận|kích thước.*ma trận/i],
+            ['Hạng ma trận & Gauss', /hạng|Gauss|r\(A\)/i],
+            ['Ma trận và biểu thức ma trận', /A\^2|A-B|A\+B|A\^T|chuyển vị|ma trận vuông/i],
+            ['Hệ phương trình tuyến tính', /hệ.*phương trình|ẩn|nghiệm cơ bản/i],
+            ['Không gian vectơ', /vectơ|vector|cơ sở|không gian/i]
+        ];
+
+        function getQuizTopic(q) {
+            const text = `${q.q} ${q.explain || ''} ${q.trapNotice || ''}`;
+            const found = QUIZ_TOPIC_RULES.find(([, re]) => re.test(text));
+            return found ? found[0] : 'Tổng hợp';
+        }
+
+        function enrichQuizQuestion(q) {
+            return {...q, topic: q.topic || getQuizTopic(q), key: q.key || q.q};
+        }
+
+        function getWrongKeys() {
+            try { return JSON.parse(localStorage.getItem('utc_quiz_wrong_keys') || '[]'); } catch(e) { return []; }
+        }
+        function saveWrongKey(q) {
+            const keys = getWrongKeys();
+            if (!keys.includes(q.key)) keys.push(q.key);
+            localStorage.setItem('utc_quiz_wrong_keys', JSON.stringify(keys.slice(-200)));
+        }
+        function removeWrongKey(q) {
+            const keys = getWrongKeys().filter(k => k !== q.key);
+            localStorage.setItem('utc_quiz_wrong_keys', JSON.stringify(keys));
+        }
+        function updateWrongCount() {
+            const el = document.getElementById('wrong-count');
+            if (el) el.textContent = `📌 Đang có ${getWrongKeys().length} câu/dạng câu được lưu để ôn lại.`;
+        }
+
+        function populateQuizTopics() {
+            const select = document.getElementById('quiz-topic-select');
+            if (!select) return;
+            const topics = [...new Set(buildDynamicQuizBank(BASE_QUIZ_DATA).map(getQuizTopic))];
+            select.innerHTML = '<option value="all">🎯 Tất cả dạng bài</option>' + topics.map(t => `<option value="${t.replace(/"/g,'&quot;')}">🧩 ${t}</option>`).join('');
+            updateWrongCount();
+        }
+
+        function createQuizSession(topic = 'all', wrongOnly = false) {
+            let pool = buildDynamicQuizBank(BASE_QUIZ_DATA).map(enrichQuizQuestion);
+            if (wrongOnly) {
+                const wrong = new Set(getWrongKeys());
+                pool = pool.filter(q => wrong.has(q.key));
+            } else if (topic !== 'all') {
+                pool = pool.filter(q => q.topic === topic);
+            }
+            if (pool.length === 0 && wrongOnly) {
+                alert('Chưa có câu sai được lưu. Hãy làm một lượt trước rồi quay lại đây.');
+                return createQuizSession('all', false);
+            }
+            if (pool.length === 0) {
+                alert('Dạng này chưa có đủ dữ liệu câu hỏi trong ngân hàng hiện tại.');
+                return createQuizSession('all', false);
+            }
+            const selected = shuffleArray(pool).slice(0, 15);
+            return selected.map(q => {
+                const pairs = q.options.map((opt, i) => ({opt, correct:i===q.correct}));
+                const shuffled = shuffleArray(pairs);
+                return {...q, options: shuffled.map(x=>x.opt), correct: shuffled.findIndex(x=>x.correct)};
+            });
+        }
+
+        function startTopicQuiz(topic) {
+            QUIZ_DATA = (window.createQuizSession || createQuizSession)(topic, false);
+            currentQuizIndex = 0;
+            userAnswers = new Array(QUIZ_DATA.length).fill(null);
+            renderQuizCard();
+            renderQuizNavMap();
+            updateWrongCount();
+        }
+
+        function startWrongQuiz() {
+            QUIZ_DATA = createQuizSession('all', true);
+            currentQuizIndex = 0;
+            userAnswers = new Array(QUIZ_DATA.length).fill(null);
+            renderQuizCard();
+            renderQuizNavMap();
+            updateWrongCount();
+        }
+
+        function clearWrongHistory() {
+            localStorage.removeItem('utc_quiz_wrong_keys');
+            updateWrongCount();
+            alert('Đã xóa danh sách câu sai.');
+        }
+
+        // --- STATE VARIABLES ---
+        let QUIZ_DATA = createQuizSession();
+        let currentQuizIndex = 0;
+        let userAnswers = new Array(QUIZ_DATA.length).fill(null);
+        let chartInstance1 = null;
+        let chartInstance2 = null;
+        let activeFormulaCategory = 'all';
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFormulas();
+            renderTraps();
+            renderSimSteps();
+            renderQuizCard();
+            renderQuizNavMap();
+            populateQuizTopics();
+            refreshMath();
+        });
+
+        // --- TAB SWITCHING LOGIC ---
+        function switchTab(tabId) {
+            const sections = ['formulas', 'traps', 'simulator', 'quiz', 'analytics'];
+            sections.forEach(id => {
+                const sec = document.getElementById(`sec-${id}`);
+                const nav = document.getElementById(`nav-${id}`);
+                if (id === tabId) {
+                    sec.classList.remove('hidden');
+                    nav.classList.add('nav-btn-active');
+                    nav.classList.remove('text-stone-300');
+                } else {
+                    sec.classList.add('hidden');
+                    nav.classList.remove('nav-btn-active');
+                    nav.classList.add('text-stone-300');
+                }
+            });
+
+            if (tabId === 'analytics') {
+                initCharts();
+            }
+
+            refreshMath();
+        }
+
+        // --- CHAPTER TOGGLE ACTION (IN-PLACE ACCORDION) ---
+        function toggleChapter(chapId) {
+            openChapters[chapId] = !openChapters[chapId];
+            renderFormulas();
+        }
+
+        function setCh1SubTab(tab) {
+            ch1SubTab = tab;
+            renderFormulas();
+        }
+
+        // --- RENDER CHAPTERS & LESSON SYSTEM ---
+        function renderFormulas(filter = activeFormulaCategory, btnElem = null) {
+            if (filter !== undefined && filter !== null) {
+                activeFormulaCategory = filter;
+            }
+
+            if (btnElem) {
+                document.querySelectorAll('.formula-filter-btn').forEach(btn => {
+                    btn.classList.remove('bg-emerald-800', 'text-white', 'font-semibold');
+                    btn.classList.add('bg-stone-100', 'text-stone-700');
+                });
+                btnElem.classList.remove('bg-stone-100', 'text-stone-700');
+                btnElem.classList.add('bg-emerald-800', 'text-white', 'font-semibold');
+            }
+
+            const searchQuery = document.getElementById('formula-search')?.value.toLowerCase().trim() || '';
+            const container = document.getElementById('formula-chapters-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            CHAPTERS_METADATA.forEach((chap) => {
+                if (activeFormulaCategory !== 'all' && activeFormulaCategory !== chap.id) {
+                    return;
+                }
+
+                const isOpen = !!openChapters[chap.id];
+
+                // Outer Card
+                const accordionWrapper = document.createElement('div');
+                accordionWrapper.className = "border border-stone-200 rounded-xl overflow-hidden shadow-sm bg-white transition-all duration-200";
+
+                // Clickable Header Button
+                const headerBtn = document.createElement('button');
+                headerBtn.type = "button";
+                headerBtn.className = `chapter-header w-full px-5 py-4 flex items-center justify-between transition border-b border-stone-200 text-left focus:outline-none ${isOpen ? 'bg-emerald-50/80 border-emerald-300' : 'bg-stone-100 hover:bg-stone-200'}`;
+                headerBtn.onclick = () => toggleChapter(chap.id);
+
+                headerBtn.innerHTML = `
+                    <div class="flex items-center space-x-3.5">
+                        <span class="text-lg font-bold ${isOpen ? 'bg-emerald-800 text-white' : 'bg-stone-300 text-stone-700'} w-8 h-8 rounded-lg flex items-center justify-center transition-colors">
+                            ${isOpen ? '▼' : '▶'}
+                        </span>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">${chap.chapNumber}</span>
+                                <h3 class="font-bold text-stone-900 text-base md:text-lg">${chap.title}</h3>
+                            </div>
+                            <p class="text-xs text-stone-500 mt-1 hidden sm:block">${chap.subtitle}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 flex-shrink-0">
+                        <span class="text-xs font-semibold px-3 py-1 rounded-full ${isOpen ? 'bg-emerald-800 text-white' : 'bg-stone-200 text-stone-700'}">
+                            ${isOpen ? 'Đang Mở (Nhấp để thu gọn)' : 'Đã Thu Gọn (Nhấp để mở)'}
+                        </span>
+                    </div>
+                `;
+
+                accordionWrapper.appendChild(headerBtn);
+
+                // IN-PLACE EXPANDABLE CONTENT (BUNG NGAY BÊN DƯỚI)
+                if (isOpen) {
+                    const contentContainer = document.createElement('div');
+                    contentContainer.id = `chap-content-${chap.id}`;
+                    contentContainer.className = "p-5 bg-stone-50/60 border-t border-stone-200 space-y-6";
+
+                    if (chap.id === 'ch1') {
+                        contentContainer.innerHTML = renderChapter1DetailedContent();
+                    } else if (chap.id === 'ch2') {
+                        contentContainer.innerHTML = renderChapter2Content();
+                    } else if (chap.id === 'ch3') {
+                        contentContainer.innerHTML = renderChapter3Content();
+                    }
+
+                    accordionWrapper.appendChild(contentContainer);
+                }
+
+                container.appendChild(accordionWrapper);
+            });
+
+            refreshMath(container);
+        }
+
+        // --- CHAPTER 1 FULL CONTENT GENERATOR ---
+        function renderChapter1DetailedContent() {
+            return `
+                <div class="bg-white rounded-xl border border-stone-200 p-4 shadow-sm space-y-4">
+                    <div class="border-b border-stone-200 pb-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-emerald-900">📘 ĐẠI SỐ TUYẾN TÍNH – CHƯƠNG 1: MA TRẬN VÀ ĐỊNH THỨC</h3>
+                            <p class="text-xs text-stone-500">Bài giảng chi tiết chuẩn giáo trình đại học: Khái niệm, Phép toán, Tích ma trận và Định thức</p>
+                        </div>
+                        <!-- Navigation Sub-tabs for Chapter 1 -->
+                        <div class="flex flex-wrap gap-1 bg-stone-100 p-1 rounded-lg text-xs font-semibold">
+                            <button onclick="setCh1SubTab('part1')" class="px-3 py-1.5 rounded-md transition ${ch1SubTab === 'part1' ? 'bg-emerald-800 text-white shadow' : 'text-stone-700 hover:bg-stone-200'}">Phần 1: Khái Niệm</button>
+                            <button onclick="setCh1SubTab('part2')" class="px-3 py-1.5 rounded-md transition ${ch1SubTab === 'part2' ? 'bg-emerald-800 text-white shadow' : 'text-stone-700 hover:bg-stone-200'}">Phần 2: Các Phép Toán</button>
+                            <button onclick="setCh1SubTab('part3')" class="px-3 py-1.5 rounded-md transition ${ch1SubTab === 'part3' ? 'bg-emerald-800 text-white shadow' : 'text-stone-700 hover:bg-stone-200'}">Phần 3: Phép Nhân 2 Ma Trận</button>
+                            <button onclick="setCh1SubTab('part4')" class="px-3 py-1.5 rounded-md transition ${ch1SubTab === 'part4' ? 'bg-emerald-800 text-white shadow' : 'text-stone-700 hover:bg-stone-200'}">Phần 4: Định Thức & Nghịch Đảo</button>
+                        </div>
+                    </div>
+
+                    ${ch1SubTab === 'part1' ? getCh1Part1Html() : ''}
+                    ${ch1SubTab === 'part2' ? getCh1Part2Html() : ''}
+                    ${ch1SubTab === 'part3' ? getCh1Part3Html() : ''}
+                    ${ch1SubTab === 'part4' ? getCh1Part4Html() : ''}
+                </div>
+            `;
+        }
+
+        // --- CH1 PART 1: KHÁI NIỆM MA TRẬN ---
+        function getCh1Part1Html() {
+            return `
+                <div class="space-y-6">
+                    <div class="bg-emerald-50 border-l-4 border-emerald-700 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-emerald-900 text-base">📌 PHẦN 1: MA TRẬN VÀ CÁC KHÁI NIỆM NỀN TẢNG</h4>
+                        <p class="text-xs text-emerald-800 mt-1">Nắm vững định nghĩa, cách ký hiệu phần tử \\(a_{ij}\\), cấp ma trận và phân biệt các dạng ma trận đặc biệt trong đề thi.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Concept 1 & 2 & 3 & 4 -->
+                        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-3">
+                            <h5 class="font-bold text-stone-800 text-sm flex items-center gap-2">
+                                <span class="bg-emerald-800 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">1</span>
+                                Khái niệm, Ký hiệu & Cấp ma trận
+                            </h5>
+                            <ul class="text-xs space-y-2 text-stone-700">
+                                <li><strong>1. Định nghĩa:</strong> Ma trận là một bảng số hình chữ nhật gồm \\(m\\) hàng và \\(n\\) cột.</li>
+                                <li><strong>2. Ký hiệu:</strong> Ký hiệu bằng chữ cái in hoa \\(A, B, C\\dots\\)
+                                    \\[A = (a_{ij})_{m \\times n} = \\begin{pmatrix} a_{11} & a_{12} & \\dots & a_{1n} \\\\ a_{21} & a_{22} & \\dots & a_{2n} \\\\ \\vdots & \\vdots & \\ddots & \\vdots \\\\ a_{m1} & a_{m2} & \\dots & a_{mn} \\end{pmatrix}\\]
+                                </li>
+                                <li><strong>3. Phần tử \\(a_{ij}\\):</strong> Nằm ở <strong>hàng thứ \\(i\\)</strong> và <strong>cột thứ \\(j\\)</strong>.</li>
+                                <li><strong>4. Cấp (kích thước):</strong> Ký hiệu \\(m \\times n\\) (đọc là "\\(m\\) nhân \\(n\\)"). \\(m\\) là số hàng, \\(n\\) là số cột.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Concept Example -->
+                        <div class="bg-white p-4 rounded-xl border border-stone-200 space-y-3 shadow-sm">
+                            <h5 class="font-bold text-stone-800 text-sm text-indigo-900">💡 Ví dụ minh họa phần tử & cấp ma trận:</h5>
+                            <p class="text-xs text-stone-600">Cho ma trận \\(A = \\begin{pmatrix} 2 & -1 & 5 \\\\ 0 & 4 & 3 \\end{pmatrix}\\):</p>
+                            <div class="p-3 bg-stone-50 rounded-lg text-xs space-y-1.5 font-mono">
+                                <p>• Cấp ma trận \\(A\\): <strong>\\(2 \\times 3\\)</strong> (gồm 2 hàng, 3 cột).</p>
+                                <p>• Phần tử \\(a_{12}\\) (hàng 1, cột 2): <strong>\\(-1\\)</strong>.</p>
+                                <p>• Phần tử \\(a_{23}\\) (hàng 2, cột 3): <strong>\\(3\\)</strong>.</p>
+                                <p>• Phần tử \\(a_{21}\\) (hàng 2, cột 1): <strong>\\(0\\)</strong>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Special Matrices Grid -->
+                    <div class="space-y-3">
+                        <h5 class="font-bold text-stone-800 text-sm uppercase tracking-wider text-emerald-900"> Các Ma Trận Đặc Biệt Thường Gặp In Đề Thi</h5>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+
+                            <div class="p-3 bg-stone-50 rounded-lg border border-stone-200 text-xs space-y-1.5">
+                                <span class="font-bold text-emerald-800">1. Ma trận vuông (Square)</span>
+                                <p class="text-stone-600">Có số hàng = số cột (\\(m = n\\)). Cấp \\(n\\). Đường chéo chính gồm \\(a_{11}, a_{22}, \\dots, a_{nn}\\).</p>
+                                <p class="font-mono text-center text-stone-800 py-1">\\[\\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix}\\]</p>
+                            </div>
+
+                            <div class="p-3 bg-stone-50 rounded-lg border border-stone-200 text-xs space-y-1.5">
+                                <span class="font-bold text-emerald-800">2. Ma trận hàng & Ma trận cột</span>
+                                <p class="text-stone-600"><strong>Ma trận hàng:</strong> Cấp \\(1 \\times n\\).<br><strong>Ma trận cột:</strong> Cấp \\(m \\times 1\\).</p>
+                                <p class="font-mono text-center text-stone-800 py-1">\\[\\begin{pmatrix} 1 & 5 & -2 \\end{pmatrix}, \\quad \\begin{pmatrix} 4 \\\\ 0 \\\\ 1 \\end{pmatrix}\\]</p>
+                            </div>
+
+                            <div class="p-3 bg-stone-50 rounded-lg border border-stone-200 text-xs space-y-1.5">
+                                <span class="font-bold text-emerald-800">3. Ma trận Không \\(O_{m \\times n}\\)</span>
+                                <p class="text-stone-600">Mọi phần tử đều bằng 0 (\\(a_{ij} = 0\\) với mọi \\(i, j\\)).</p>
+                                <p class="font-mono text-center text-stone-800 py-1">\\[O = \\begin{pmatrix} 0 & 0 & 0 \\\\ 0 & 0 & 0 \\end{pmatrix}\\]</p>
+                            </div>
+
+                            <div class="p-3 bg-stone-50 rounded-lg border border-stone-200 text-xs space-y-1.5">
+                                <span class="font-bold text-emerald-800">4. Ma trận Đơn vị \\(I_n\\)</span>
+                                <p class="text-stone-600">Ma trận vuông có đường chéo chính toàn số 1, các phần tử còn lại bằng 0.</p>
+                                <p class="font-mono text-center text-stone-800 py-1">\\[I_3 = \\begin{pmatrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{pmatrix}\\]</p>
+                            </div>
+
+                            <div class="p-3 bg-stone-50 rounded-lg border border-stone-200 text-xs space-y-1.5">
+                                <span class="font-bold text-emerald-800">5. Ma trận đường chéo</span>
+                                <p class="text-stone-600">Ma trận vuông có mọi phần tử ngoài đường chéo chính đều bằng 0 (\\(a_{ij} = 0\\) khi \\(i \\ne j\\)).</p>
+                                <p class="font-mono text-center text-stone-800 py-1">\\[D = \\begin{pmatrix} 5 & 0 & 0 \\\\ 0 & -2 & 0 \\\\ 0 & 0 & 3 \\end{pmatrix}\\]</p>
+                            </div>
+
+                            <div class="p-3 bg-stone-50 rounded-lg border border-stone-200 text-xs space-y-1.5">
+                                <span class="font-bold text-emerald-800">6. Ma trận tam giác</span>
+                                <p class="text-stone-600"><strong>Tam giác trên:</strong> các số dưới đường chéo bằng 0.<br><strong>Tam giác dưới:</strong> các số trên đường chéo bằng 0.</p>
+                                <p class="font-mono text-center text-stone-800 py-1">\\[\\begin{pmatrix} 2 & 1 & 4 \\\\ 0 & 3 & 7 \\\\ 0 & 0 & -1 \\end{pmatrix}\\]</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- CH1 PART 2: CÁC PHÉP TOÁN TRÊN MA TRẬN ---
+        function getCh1Part2Html() {
+            return `
+                <div class="space-y-6">
+                    <div class="bg-emerald-50 border-l-4 border-emerald-700 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-emerald-900 text-base">📌 PHẦN 2: CÁC PHÉP TOÁN TRÊN MA TRẬN</h4>
+                        <p class="text-xs text-emerald-800 mt-1">Đẳng thức, Phép cộng, Phép trừ, Nhân ma trận với một số và các tính chất đại số cơ bản.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Rules & Conditions -->
+                        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-3 text-xs text-stone-700">
+                            <h5 class="font-bold text-stone-800 text-sm">📋 Điều kiện & Quy tắc thực hiện phép toán:</h5>
+                            
+                            <div class="p-2.5 bg-white rounded border border-stone-200 space-y-1">
+                                <strong class="text-emerald-800 block">1. Hai ma trận bằng nhau:</strong>
+                                <p>\\(A = B \\iff\\) Cùng cấp \\(m \\times n\\) và \\(a_{ij} = b_{ij}\\) với mọi \\(i, j\\).</p>
+                            </div>
+
+                            <div class="p-2.5 bg-white rounded border border-stone-200 space-y-1">
+                                <strong class="text-emerald-800 block">2. Điều kiện Cộng / Trừ ma trận:</strong>
+                                <p>Hai ma trận <strong>BẮT BUỘC PHẢI CÙNG CẤP</strong> \\(m \\times n\\).</p>
+                                <p>Cộng/Trừ từng phần tử tương ứng: \\(C = A \\pm B \\implies c_{ij} = a_{ij} \\pm b_{ij}\\).</p>
+                            </div>
+
+                            <div class="p-2.5 bg-white rounded border border-stone-200 space-y-1">
+                                <strong class="text-emerald-800 block">3. Nhân ma trận với một số \\(k\\):</strong>
+                                <p>Nhân số \\(k\\) vào <strong>TẤT CẢ các phần tử</strong> của ma trận: \\(k A = (k \\cdot a_{ij})_{m \\times n}\\).</p>
+                            </div>
+                        </div>
+
+                        <!-- Worked Example -->
+                        <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-sm space-y-3">
+                            <h5 class="font-bold text-indigo-900 text-sm">💡 Ví dụ tính toán cụ thể (Cộng, Trừ & Nhân số):</h5>
+                            <p class="text-xs text-stone-600">Cho \\(A = \\begin{pmatrix} 1 & 3 \\\\ -2 & 4 \\end{pmatrix}\\) và \\(B = \\begin{pmatrix} 2 & 0 \\\\ 5 & -1 \\end{pmatrix}\\). Tính \\(2A - 3B\\):</p>
+
+                            <div class="p-3 bg-stone-50 rounded-lg text-xs space-y-2 font-mono">
+                                <p>• Tính \\(2A = \\begin{pmatrix} 2(1) & 2(3) \\\\ 2(-2) & 2(4) \\end{pmatrix} = \\begin{pmatrix} 2 & 6 \\\\ -4 & 8 \\end{pmatrix}\\)</p>
+                                <p>• Tính \\(3B = \\begin{pmatrix} 3(2) & 3(0) \\\\ 3(5) & 3(-1) \\end{pmatrix} = \\begin{pmatrix} 6 & 0 \\\\ 15 & -3 \\end{pmatrix}\\)</p>
+                                <p class="text-emerald-900 font-bold">• Kết quả \\(2A - 3B = \\begin{pmatrix} 2-6 & 6-0 \\\\ -4-15 & 8-(-3) \\end{pmatrix} = \\begin{pmatrix} -4 & 6 \\\\ -19 & 11 \\end{pmatrix}\\)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Properties Card -->
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 text-xs space-y-2">
+                        <h5 class="font-bold text-stone-800 text-sm uppercase tracking-wider text-emerald-900"> Các Tính Chất Đại Số Cơ Bản Phép Cộng & Nhân Số</h5>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-stone-700">
+                            <div class="p-2 bg-white rounded border border-stone-200">
+                                <strong>Giao hoán phép cộng:</strong><br>\\(A + B = B + A\\)
+                            </div>
+                            <div class="p-2 bg-white rounded border border-stone-200">
+                                <strong>Kết hợp phép cộng:</strong><br>\\((A + B) + C = A + (B + C)\\)
+                            </div>
+                            <div class="p-2 bg-white rounded border border-stone-200">
+                                <strong>Cộng ma trận Không:</strong><br>\\(A + O = A\\)
+                            </div>
+                            <div class="p-2 bg-white rounded border border-stone-200">
+                                <strong>Phân phối số nhân:</strong><br>\\(k(A + B) = kA + kB\\)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- CH1 PART 3: PHÉP NHÂN HAI MA TRẬN ---
+        function getCh1Part3Html() {
+            return `
+                <div class="space-y-6">
+                    <div class="bg-emerald-50 border-l-4 border-emerald-700 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-emerald-900 text-base">📌 PHẦN 3: PHÉP NHÂN HAI MA TRẬN (TÍCH MA TRẬN)</h4>
+                        <p class="text-xs text-emerald-800 mt-1">Điều kiện để nhân được, quy tắc "Hàng nhân Cột" và kích thước ma trận tích kết quả.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Key Rules -->
+                        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-3 text-xs text-stone-700">
+                            <h5 class="font-bold text-stone-800 text-sm"> Quyết Định Quy Tắc Nhân Ma Trận:</h5>
+
+                            <div class="p-3 bg-amber-50 border border-amber-300 rounded-lg space-y-1">
+                                <strong class="text-amber-900 block text-xs">⚠️ 1. ĐIỀU KIỆN ĐỂ NHÂN ĐƯỢC:</strong>
+                                <p class="text-stone-800 font-medium">Số CỘT của ma trận bên trái (\\(A_{m \\times n}\\)) PHẢI BẰNG số HÀNG của ma trận bên phải (\\(B_{n \\times p}\\)).</p>
+                            </div>
+
+                            <div class="p-3 bg-emerald-50 border border-emerald-300 rounded-lg space-y-1">
+                                <strong class="text-emerald-900 block text-xs">📐 2. KÍCH THƯỚC MA TRẬN KẾT QUẢ:</strong>
+                                <p class="text-stone-800 font-medium font-mono text-center text-sm">
+                                    \\[A_{m \\times \\mathbf{n}} \\times B_{\\mathbf{n} \\times p} = C_{m \\times p}\\]
+                                </p>
+                            </div>
+
+                            <div class="p-3 bg-white border border-stone-200 rounded-lg space-y-1">
+                                <strong class="text-stone-800 block text-xs">✍️ 3. Quy tắc "Hàng nhân Cột":</strong>
+                                <p>Phần tử \\(c_{ij}\\) ở hàng \\(i\\) cột \\(j\\) của ma trận tích bằng tích vô hướng của <strong>Hàng \\(i\\) ma trận \\(A\\)</strong> với <strong>Cột \\(j\\) ma trận \\(B\\)</strong>.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step by Step Calculation Example -->
+                        <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-sm space-y-3">
+                            <h5 class="font-bold text-indigo-900 text-sm">💡 Ví dụ mẫu tính toán chi tiết:</h5>
+                            <p class="text-xs text-stone-600">Nhân ma trận \\(A_{1 \\times 2} = \\begin{pmatrix} 1 & 2 \\end{pmatrix}\\) với \\(B_{2 \\times 2} = \\begin{pmatrix} 3 & 4 \\\\ 5 & 6 \\end{pmatrix}\\):</p>
+
+                            <div class="p-3 bg-stone-50 rounded-lg text-xs space-y-2 font-mono">
+                                <p>• Kiểm tra cấp: \\((1 \\times \\mathbf{2}) \\times (\\mathbf{2} \\times 2) \\to\\) Kết quả ma trận cấp <strong>\\(1 \\times 2\\)</strong>.</p>
+                                <p>• Tính phần tử \\(c_{11}\\) (Hàng 1 nhân Cột 1):<br>
+                                   \\(c_{11} = 1 \\cdot 3 + 2 \\cdot 5 = 3 + 10 = 13\\)
+                                </p>
+                                <p>• Tính phần tử \\(c_{12}\\) (Hàng 1 nhân Cột 2):<br>
+                                   \\(c_{12} = 1 \\cdot 4 + 2 \\cdot 6 = 4 + 12 = 16\\)
+                                </p>
+                                <p class="text-emerald-900 font-bold">• Ma trận kết quả: \\(C = \\begin{pmatrix} 13 & 16 \\end{pmatrix}\\)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trap Warning Box -->
+                    <div class="p-4 bg-red-50 border border-red-200 rounded-xl space-y-2 text-xs">
+                        <h5 class="font-bold text-red-900 flex items-center gap-1.5">
+                            <span>🚨</span> BẪY CHẾT NGƯỜI CẦN GHI NHỚ TRONG BÀI THI:
+                        </h5>
+                        <p class="text-stone-700">
+                            Phép nhân ma trận <strong>KHÔNG CÓ TÍNH CHẤT GIAO HOÁN</strong> (\\(AB \\ne BA\\) nói chung). 
+                            Do đó, tuyệt đối KHÔNG áp dụng hằng đẳng thức số học \\((A+B)^2 = A^2 + 2AB + B^2\\) trừ khi đề bài cho trước \\(AB = BA\\).
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- CH1 PART 4: ĐỊNH THỨC & MA TRẬN NGHỊCH ĐẢO ---
+        function getCh1Part4Html() {
+            return `
+                <div class="space-y-6">
+                    <div class="bg-emerald-50 border-l-4 border-emerald-700 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-emerald-900 text-base">📌 PHẦN 4: ĐỊNH THỨC (DET) & MA TRẬN NGHỊCH ĐẢO</h4>
+                        <p class="text-xs text-emerald-800 mt-1">Các công thức tính nhanh định thức, định thức phụ hợp và ma trận nghịch đảo cấp \\(n\\).</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2 text-xs">
+                            <span class="font-bold text-emerald-800 text-sm">1. Công thức \\(\\det(kA)\\)</span>
+                            <p class="text-stone-600">Với ma trận vuông \\(A\\) cấp \\(n\\):</p>
+                            <p class="font-mono text-emerald-900 font-bold text-center text-sm bg-white p-2 rounded border border-stone-200">\\[\\det(kA) = k^n \\cdot \\det(A)\\]</p>
+                            <p class="text-stone-500">Rút \\(k\\) ra từ \\(n\\) hàng nên phải mũ \\(n\\).</p>
+                        </div>
+
+                        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2 text-xs">
+                            <span class="font-bold text-emerald-800 text-sm">2. Định thức Ma trận phụ hợp</span>
+                            <p class="text-stone-600">Với \\(P_A\\) (hoặc \\(\\text{adj}(A)\\)) cấp \\(n\\):</p>
+                            <p class="font-mono text-emerald-900 font-bold text-center text-sm bg-white p-2 rounded border border-stone-200">\\[\\det(P_A) = (\\det A)^{n-1}\\]</p>
+                            <p class="text-stone-500">Cấp 3 mũ 2, cấp 4 mũ 3.</p>
+                        </div>
+
+                        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2 text-xs">
+                            <span class="font-bold text-emerald-800 text-sm">3. Ma trận nghịch đảo \\(A^{-1}\\)</span>
+                            <p class="text-stone-600">Khả nghịch \\(\\iff \\det(A) \\ne 0\\):</p>
+                            <p class="font-mono text-emerald-900 font-bold text-center text-sm bg-white p-2 rounded border border-stone-200">\\[A^{-1} = \\frac{1}{\\det A} P_A^T\\]</p>
+                            <p class="text-stone-500">\\((AB)^{-1} = B^{-1} A^{-1}\\) (đảo thứ tự).</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- CHAPTER 2 CONTENT GENERATOR ---
+        function renderChapter2Content() {
+            return `
+                <div class="bg-white rounded-xl border border-stone-200 p-4 shadow-sm space-y-6">
+                    <div class="border-b border-stone-200 pb-3">
+                        <h3 class="text-lg font-bold text-emerald-900">📗 CHƯƠNG 2: HỆ PHƯƠNG TRÌNH TUYẾN TÍNH VÀ MA TRẬN</h3>
+                        <p class="text-xs text-stone-500">Hệ tổng quát, Quy tắc Cramer, Định lý Kronecker-Capelli và Hệ thuần nhất</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2">
+                            <h4 class="font-bold text-stone-800 text-sm text-emerald-800">1. Quy Tắc Cramer (Nghiệm Duy Nhất)</h4>
+                            <p class="text-stone-600">Áp dụng cho hệ có số phương trình = số ẩn = \\(n\\) và \\(D = \\det(A) \\ne 0\\):</p>
+                            <p class="font-mono text-center text-sm bg-white p-2 rounded border border-stone-200 font-bold">\\[x_i = \\frac{D_i}{D}\\]</p>
+                            <p class="text-stone-500">trong đó \\(D_i\\) là định thức thay cột thứ \\(i\\) bằng cột vế phải \\(B\\).</p>
+                        </div>
+
+                        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2">
+                            <h4 class="font-bold text-stone-800 text-sm text-emerald-800">2. Định Lý Kronecker - Capelli</h4>
+                            <p class="text-stone-600">So sánh hạng ma trận hệ số \\(r(A)\\) và ma trận mở rộng \\(r(\\overline{A})\\):</p>
+                            <ul class="space-y-1 text-stone-700 font-medium">
+                                <li>• \\(r(A) < r(\\overline{A}) \\iff\\) <strong>VÔ NGHIỆM</strong></li>
+                                <li>• \\(r(A) = r(\\overline{A}) = n \\iff\\) <strong>NGHIỆM DUY NHẤT</strong></li>
+                                <li>• \\(r(A) = r(\\overline{A}) < n \\iff\\) <strong>VÔ SỐ NGHIỆM</strong> (phụ thuộc \\(n - r\\) ẩn tự do)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- CHAPTER 3 CONTENT GENERATOR ---
+        function renderChapter3Content() {
+            return `
+                <div class="bg-white rounded-xl border border-stone-200 p-4 shadow-sm space-y-6">
+                    <div class="border-b border-stone-200 pb-3">
+                        <h3 class="text-lg font-bold text-emerald-900">📙 CHƯƠNG 3: KHÔNG GIAN VECTƠ & BẪY NÂNG CAO</h3>
+                        <p class="text-xs text-stone-500">Sự độc lập tuyến tính, phụ thuộc tuyến tính, cơ sở, chiều và tọa độ</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2">
+                            <h4 class="font-bold text-stone-800 text-sm text-emerald-800">1. Độc Lập / Phụ Thuộc Tuyến Tính</h4>
+                            <p class="text-stone-600">Hệ vectơ \\(\\{v_1, v_2, \\dots, v_k\\}\\) ĐLTT nếu phương trình tổ hợp tuyến tính:</p>
+                            <p class="font-mono text-center text-xs bg-white p-2 rounded border border-stone-200 font-bold">\\[c_1 v_1 + c_2 v_2 + \\dots + c_k v_k = 0 \\implies c_1=c_2=\\dots=c_k=0\\]</p>
+                        </div>
+
+                        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2">
+                            <h4 class="font-bold text-stone-800 text-sm text-emerald-800">2. Số Chiều Không Gian Nghiệm</h4>
+                            <p class="text-stone-600">Số chiều của không gian nghiệm hệ thuần nhất \\(AX = 0\\) bằng:</p>
+                            <p class="font-mono text-center text-sm bg-white p-2 rounded border border-stone-200 font-bold">\\[\\dim(V) = n - r(A)\\]</p>
+                            <p class="text-stone-500">với \\(n\\) là số ẩn và \\(r(A)\\) là hạng ma trận hệ số.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterFormulas(cat, elem) {
+            if (cat !== 'all') {
+                openChapters[cat] = true;
+            }
+            renderFormulas(cat, elem);
+        }
+
+        function searchFormulas() {
+            renderFormulas(activeFormulaCategory, null);
+        }
+
+        // --- TRAPS EXPLAINER RENDERER ---
+        let selectedTrapId = 1;
+        function renderTraps() {
+            const btnContainer = document.getElementById('trap-buttons-container');
+            if (!btnContainer) return;
+            btnContainer.innerHTML = '';
+
+            TRAPS_DATA.forEach(trap => {
+                const btn = document.createElement('button');
+                const isSelected = trap.id === selectedTrapId;
+                btn.className = `w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold transition border ${isSelected ? 'bg-amber-50 border-amber-400 text-amber-900 shadow-sm' : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'}`;
+                btn.innerHTML = trap.title;
+                btn.onclick = () => {
+                    selectedTrapId = trap.id;
+                    renderTraps();
+                };
+                btnContainer.appendChild(btn);
+            });
+
+            const currentTrap = TRAPS_DATA.find(t => t.id === selectedTrapId) || TRAPS_DATA[0];
+            const detailCard = document.getElementById('trap-detail-card');
+            if (!detailCard) return;
+            
+            detailCard.innerHTML = `
+                <div class="border-b border-stone-200 pb-3">
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Bẫy #${currentTrap.id}</span>
+                    <h3 class="text-lg font-bold text-stone-800 mt-2">${currentTrap.title}</h3>
+                    <p class="text-xs text-stone-500 mt-1">${formatMathText(currentTrap.trapSummary)}</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-4 space-y-2">
+                        <div class="flex items-center gap-1.5 text-red-800 font-bold text-xs uppercase">
+                            <span>❌</span> Lỗi Sai Phổ Biến (Bẫy Tự Sát)
+                        </div>
+                        <p class="text-xs text-stone-700 leading-relaxed">${formatMathText(currentTrap.wrongReason)}</p>
+                    </div>
+
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-2">
+                        <div class="flex items-center gap-1.5 text-emerald-800 font-bold text-xs uppercase">
+                            <span>✅</span> Công Thức & Quy Tắc Chuẩn
+                        </div>
+                        <div class="p-2 bg-white rounded border border-emerald-300 font-mono text-center text-sm font-bold text-emerald-900">
+                            ${formatMathText('\\[' + currentTrap.correctRule + '\\]')}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-stone-50 border border-stone-200 rounded-xl p-4 space-y-3">
+                    <h4 class="text-xs font-bold text-stone-700 uppercase tracking-wider">Ví Dụ Thực Chiến Trong Đề Thi:</h4>
+                    <p class="text-sm font-medium text-stone-800">${formatMathText(currentTrap.exampleText)}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <div class="p-2.5 bg-red-100/60 rounded text-red-900 font-medium">${formatMathText(currentTrap.wrongAnswer)}</div>
+                        <div class="p-2.5 bg-emerald-100/60 rounded text-emerald-900 font-medium">${formatMathText(currentTrap.rightAnswer)}</div>
+                    </div>
+                </div>
+            `;
+
+            refreshMath(detailCard);
+        }
+
+        // --- SIMULATOR GAUSS LOGIC ---
+        function updateSimData() {
+            const slider = document.getElementById('sim-m-slider');
+            const display = document.getElementById('sim-m-val-display');
+            if (display && slider) {
+                display.innerText = `m = ${slider.value}`;
+            }
+            renderSimSteps();
+        }
+
+        function changeSimProblem() {
+            renderSimSteps();
+        }
+
+        function renderSimSteps() {
+            const probId = document.getElementById('sim-problem-select')?.value || '1';
+            const mVal = parseInt(document.getElementById('sim-m-slider')?.value || '-3');
+            const container = document.getElementById('sim-steps-container');
+            const badge = document.getElementById('sim-status-badge');
+
+            if (!container) return;
+
+            let html = '';
+
+            if (probId === '1') {
+                if (mVal === -3) {
+                    if (badge) {
+                        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800";
+                        badge.innerText = "m = -3 (Hàng 2 triệt tiêu -> Tụt Hạng xuống 1!)";
+                    }
+                } else {
+                    if (badge) {
+                        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
+                        badge.innerText = `m = ${mVal} (Giữ 2 hàng khác 0 -> Hạng r(A) = 2)`;
+                    }
+                }
+
+                html = `
+                    <div class="space-y-4">
+                        <div class="p-3 bg-stone-50 rounded-lg border border-stone-200">
+                            <span class="text-xs font-bold text-stone-500 uppercase block mb-1">Bước 1: Ma trận hệ số gốc A</span>
+                            <div class="flex items-center justify-center font-mono text-sm py-2">
+                                \\[A = \\begin{pmatrix} 1 & 2 & -1 \\\\ 2 & 4 & -2 \\\\ 3 & 6 & ${mVal} \\end{pmatrix}\\]
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-stone-50 rounded-lg border border-stone-200">
+                            <span class="text-xs font-bold text-stone-500 uppercase block mb-1">Bước 2: Phép khử Gauss (\\(h_2 \\to h_2 - 2h_1\\) và \\(h_3 \\to h_3 - 3h_1\\))</span>
+                            <div class="flex items-center justify-center font-mono text-sm py-2">
+                                \\[\\to \\begin{pmatrix} 1 & 2 & -1 \\\\ 0 & 0 & 0 \\\\ 0 & 0 & ${mVal + 3} \\end{pmatrix}\\]
+                            </div>
+                        </div>
+
+                        <div class="p-4 ${mVal === -3 ? 'bg-red-50 border-red-300' : 'bg-emerald-50 border-emerald-300'} border rounded-xl space-y-2">
+                            <h4 class="font-bold text-sm ${mVal === -3 ? 'text-red-900' : 'text-emerald-900'}">
+                                KẾT LUẬN HẠNG KHI m = ${mVal}:
+                            </h4>
+                            <p class="text-xs leading-relaxed text-stone-800">
+                                ${mVal === -3 
+                                    ? `Khi <strong>m = -3</strong>, phần tử \\(m+3 = 0\\). Ma trận chỉ còn <strong>1 hàng khác không</strong> \\(\\implies r(A) = 1\\).`
+                                    : `Khi <strong>m = ${mVal} (\\ne -3)</strong>, phần tử \\(m+3 = ${mVal+3} \\ne 0\\). Ma trận có <strong>2 hàng khác không</strong> \\(\\implies r(A) = 2\\).`
+                                }
+                            </p>
+                        </div>
+                    </div>
+                `;
+            } else if (probId === '2') {
+                if (mVal === 2) {
+                    if (badge) {
+                        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
+                        badge.innerText = "m = 2 (r(A) = r(A_mở_rộng) = 2 -> Vô số nghiệm)";
+                    }
+                } else {
+                    if (badge) {
+                        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800";
+                        badge.innerText = `m = ${mVal} (r(A) = 2 < r(A_mở_rộng) = 3 -> VÔ NGHIỆM)`;
+                    }
+                }
+
+                html = `
+                    <div class="space-y-4">
+                        <div class="p-3 bg-stone-50 rounded-lg border border-stone-200">
+                            <span class="text-xs font-bold text-stone-500 uppercase block mb-1">Hệ phương trình xét với m:</span>
+                            <div class="flex items-center justify-center font-mono text-sm py-1">
+                                \\[\\begin{cases} x_1 + x_2 + x_3 = 1 \\\\ 2x_1 + 3x_2 + 4x_3 = 3 \\\\ x_1 + 2x_2 + 3x_3 = ${mVal} \\end{cases}\\]
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-stone-50 rounded-lg border border-stone-200">
+                            <span class="text-xs font-bold text-stone-500 uppercase block mb-1">Ma trận mở rộng \\(\\overline{A} = (A \\mid B)\\) sau biến đổi Gauss:</span>
+                            <div class="flex items-center justify-center font-mono text-sm py-2">
+                                \\[\\to \\begin{pmatrix} 1 & 1 & 1 & | & 1 \\\\ 0 & 1 & 2 & | & 1 \\\\ 0 & 0 & 0 & | & ${mVal - 2} \\end{pmatrix}\\]
+                            </div>
+                        </div>
+
+                        <div class="p-4 ${mVal === 2 ? 'bg-emerald-50 border-emerald-300' : 'bg-red-50 border-red-300'} border rounded-xl space-y-2">
+                            <h4 class="font-bold text-sm ${mVal === 2 ? 'text-emerald-900' : 'text-red-900'}">
+                                KẾT LUẬN THEO KRONECKER-CAPELLI (m = ${mVal}):
+                            </h4>
+                            <p class="text-xs leading-relaxed text-stone-800">
+                                ${mVal === 2 
+                                    ? `Khi <strong>m = 2</strong>, \\(r(A) = r(\\overline{A}) = 2 < 3\\) \\(\\implies\\) <strong>Hệ có vô số nghiệm phụ thuộc 1 ẩn tự do</strong>.`
+                                    : `Khi <strong>m = ${mVal} (\\ne 2)</strong>, \\(r(A) = 2 < r(\\overline{A}) = 3 \\implies\\) <strong>Hệ VÔ NGHIỆM</strong>.`
+                                }
+                            </p>
+                        </div>
+                    </div>
+                `;
+            } else if (probId === '3') {
+                if (mVal === 0) {
+                    if (badge) {
+                        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
+                        badge.innerText = "m = 0 (det A = 0 -> Có nghiệm KHÔNG TẦM THƯỜNG)";
+                    }
+                } else {
+                    if (badge) {
+                        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-100 text-stone-800";
+                        badge.innerText = `m = ${mVal} (det A != 0 -> Chỉ có nghiệm TẦM THƯỜNG (0,0,0))`;
+                    }
+                }
+
+                html = `
+                    <div class="space-y-4">
+                        <div class="p-3 bg-stone-50 rounded-lg border border-stone-200">
+                            <span class="text-xs font-bold text-stone-500 uppercase block mb-1">Hệ thuần nhất AX = 0:</span>
+                            <div class="flex items-center justify-center font-mono text-sm py-1">
+                                \\[\\begin{cases} x_1 + 2x_2 - x_3 = 0 \\\\ 2x_1 + 5x_2 + x_3 = 0 \\\\ 3x_1 + 6x_2 + (${mVal} - 3)x_3 = 0 \\end{cases}\\]
+                            </div>
+                        </div>
+
+                        <div class="p-4 ${mVal === 0 ? 'bg-emerald-50 border-emerald-300' : 'bg-stone-100 border-stone-300'} border rounded-xl space-y-2">
+                            <h4 class="font-bold text-sm ${mVal === 0 ? 'text-emerald-900' : 'text-stone-800'}">
+                                KẾT LUẬN NGHIỆM HỆ THUẦN NHẤT KHI m = ${mVal}:
+                            </h4>
+                            <p class="text-xs leading-relaxed text-stone-800">
+                                ${mVal === 0 
+                                    ? `Khi <strong>m = 0</strong>, \\(\\det(A) = 0 \\implies\\) Hệ có <strong>vô số nghiệm / nghiệm không tầm thường</strong>.`
+                                    : `Khi <strong>m = ${mVal} (\\ne 0)</strong>, \\(\\det(A) \\ne 0 \\implies\\) Hệ <strong>chỉ có DUY NHẤT nghiệm tầm thường</strong> \\((0,0,0)\\).`
+                                }
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+            refreshMath(container);
+        }
+
+        // --- QUIZ LOGIC ---
+        function renderQuizNavMap() {
+            const mapContainer = document.getElementById('quiz-nav-map');
+            if (!mapContainer) return;
+            mapContainer.innerHTML = '';
+
+            QUIZ_DATA.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                const isAnswered = userAnswers[idx] !== null;
+                const isCorrect = isAnswered && userAnswers[idx] === q.correct;
+                const isCurrent = idx === currentQuizIndex;
+
+                let btnStyle = "bg-stone-100 text-stone-600 border-stone-200";
+                if (isAnswered) {
+                    btnStyle = isCorrect ? "bg-emerald-600 text-white border-emerald-700" : "bg-red-500 text-white border-red-600";
+                }
+                if (isCurrent) {
+                    btnStyle += " ring-2 ring-indigo-600 ring-offset-1 font-bold";
+                }
+
+                btn.className = `w-7 h-7 rounded-lg text-xs flex items-center justify-center border transition ${btnStyle}`;
+                btn.innerText = idx + 1;
+                btn.onclick = () => {
+                    currentQuizIndex = idx;
+                    renderQuizCard();
+                    renderQuizNavMap();
+                };
+                mapContainer.appendChild(btn);
+            });
+
+            let score = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans === QUIZ_DATA[idx].correct) score++;
+            });
+            const scoreDisplay = document.getElementById('quiz-score-num');
+            if (scoreDisplay) scoreDisplay.innerText = `${score} / ${QUIZ_DATA.length}`;
+        }
+
+        function renderQuizCard() {
+            const card = document.getElementById('quiz-card');
+            if (!card) return;
+            const q = QUIZ_DATA[currentQuizIndex];
+
+            const isAnswered = userAnswers[currentQuizIndex] !== null;
+            const selectedOpt = userAnswers[currentQuizIndex];
+
+            let optionsHtml = q.options.map((opt, idx) => {
+                let btnStyle = "bg-stone-50 border-stone-200 hover:bg-stone-100 text-stone-800";
+                
+                if (isAnswered) {
+                    if (idx === q.correct) {
+                        btnStyle = "bg-emerald-100 border-emerald-500 text-emerald-900 font-bold";
+                    } else if (idx === selectedOpt) {
+                        btnStyle = "bg-red-100 border-red-500 text-red-900";
+                    } else {
+                        btnStyle = "bg-stone-50 border-stone-200 text-stone-400 opacity-60";
+                    }
+                }
+
+                const formattedOpt = formatMathText(opt);
+
+                return `
+                    <button onclick="selectOption(${idx})" ${isAnswered ? 'disabled' : ''} class="w-full text-left p-3 rounded-lg border transition text-xs sm:text-sm flex items-center gap-3 ${btnStyle}">
+                        <span class="font-bold uppercase w-5 text-center flex-shrink-0">${String.fromCharCode(65 + idx)}.</span>
+                        <div class="flex-grow">${formattedOpt}</div>
+                    </button>
+                `;
+            }).join('');
+
+            let feedbackHtml = '';
+            if (isAnswered) {
+                const isCorrect = selectedOpt === q.correct;
+                feedbackHtml = `
+                    <div class="p-4 rounded-xl border space-y-3 ${isCorrect ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}">
+                        <div class="flex items-center gap-2 font-bold text-sm ${isCorrect ? 'text-emerald-800' : 'text-red-800'}">
+                            <span>${isCorrect ? '🎉 CHÍNH XÁC!' : '❌ BẠN ĐÃ MẮC BẪY!'}</span>
+                        </div>
+                        <p class="text-xs text-amber-900 bg-amber-100/80 p-2.5 rounded-lg font-medium leading-relaxed">${formatMathText(q.trapNotice)}</p>
+                        <div class="text-xs text-stone-700 space-y-1">
+                            <strong class="block text-stone-800">Lời giải chi tiết:</strong>
+                            <div class="whitespace-pre-line leading-relaxed">${formatMathText(q.explain)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start gap-2">
+                        <span class="px-2.5 py-1 bg-stone-100 text-stone-700 text-xs font-bold rounded-md">Câu hỏi ${currentQuizIndex + 1} / ${QUIZ_DATA.length}</span>
+                        ${isAnswered ? (selectedOpt === q.correct ? '<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">+1 Điểm</span>' : '<span class="text-xs font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded border border-red-200">0 Điểm</span>') : ''}
+                    </div>
+
+                    <h3 class="text-sm sm:text-base font-semibold text-stone-800 leading-relaxed">
+                        ${formatMathText(q.q)}
+                    </h3>
+
+                    <div class="space-y-2 pt-2">
+                        ${optionsHtml}
+                    </div>
+
+                    ${feedbackHtml}
+
+                    <div class="flex justify-between items-center pt-4 border-t border-stone-100">
+                        <button onclick="prevQuestion()" ${currentQuizIndex === 0 ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 bg-stone-200 text-xs text-stone-500 rounded-lg"' : 'class="px-3 py-1.5 bg-stone-200 hover:bg-stone-300 text-xs font-semibold text-stone-700 rounded-lg transition"'}>
+                            ⬅️ Câu trước
+                        </button>
+
+                        ${currentQuizIndex < QUIZ_DATA.length - 1 ? `
+                            <button onclick="nextQuestion()" class="px-4 py-1.5 bg-emerald-800 hover:bg-emerald-700 text-xs font-semibold text-white rounded-lg transition">
+                                Câu tiếp theo ➡
+                            </button>
+                        ` : `
+                            <button onclick="finishQuiz()" class="px-4 py-1.5 bg-indigo-900 hover:bg-indigo-800 text-xs font-semibold text-white rounded-lg transition">
+                                🏁 Xem Kết Quả Bài Làm
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+
+            refreshMath(card);
+        }
+
+        function selectOption(idx) {
+            userAnswers[currentQuizIndex] = idx;
+            const q = QUIZ_DATA[currentQuizIndex];
+            if (idx === q.correct) removeWrongKey(q);
+            else saveWrongKey(q);
+            updateWrongCount();
+            renderQuizCard();
+            renderQuizNavMap();
+        }
+
+        function nextQuestion() {
+            if (currentQuizIndex < QUIZ_DATA.length - 1) {
+                currentQuizIndex++;
+                renderQuizCard();
+                renderQuizNavMap();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuizIndex > 0) {
+                currentQuizIndex--;
+                renderQuizCard();
+                renderQuizNavMap();
+            }
+        }
+
+        function resetQuiz() {
+            QUIZ_DATA = createQuizSession();
+            currentQuizIndex = 0;
+            userAnswers = new Array(QUIZ_DATA.length).fill(null);
+            renderQuizCard();
+            renderQuizNavMap();
+        }
+
+        function finishQuiz() {
+            let score = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans === QUIZ_DATA[idx].correct) score++;
+            });
+            const total = QUIZ_DATA.length;
+            const pct = Math.round((score / total) * 100);
+            alert(`🏆 HOÀN THÀNH BÀI LUYỆN TRẮC NGHIỆM!\n\nKết quả: ${score}/${total} câu đúng (${pct}%).\n\nHãy ôn tập lại các dạng câu sai trong phần Học Theo Chương!`);
+        }
+
+        // --- CHARTS INITIALIZATION ---
+        function initCharts() {
+            const ctx1 = document.getElementById('chart-distribution')?.getContext('2d');
+            if (ctx1) {
+                if (chartInstance1) chartInstance1.destroy();
+                chartInstance1 = new Chart(ctx1, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Chương 1: Ma trận & Det (6 câu)', 'Chương 2: Hệ phương trình (5 câu)', 'Chương 3: Không gian Vectơ (4 câu)'],
+                        datasets: [{
+                            data: [6, 5, 4],
+                            backgroundColor: ['#047857', '#312e81', '#d97706'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { font: { size: 11 } } }
+                        }
+                    }
+                });
+            }
+
+            const ctx2 = document.getElementById('chart-trap-risk')?.getContext('2d');
+            if (ctx2) {
+                if (chartInstance2) chartInstance2.destroy();
+                chartInstance2 = new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: [
+                            'Tích ma trận AB vs BA',
+                            'Lũy thừa det(kA)',
+                            'Biện luận hạng m',
+                            'Kronecker-Capelli',
+                            'Số chiều dim(V)'
+                        ],
+                        datasets: [{
+                            label: 'Tỉ lệ mắc bẫy (%)',
+                            data: [72, 62, 75, 54, 48],
+                            backgroundColor: '#d97706',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } },
+                            x: { ticks: { font: { size: 10 } } }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+    </script>
+
+<script>
+(function(){
+  const LS = {
+    answered: 'utc_sq_answered_v2',
+    correct: 'utc_sq_correct_v2',
+    lessons: 'utc_sq_lessons_v2',
+    notes: 'utc_sq_notes_v2'
+  };
+
+  function read(k, fallback){ try { return JSON.parse(localStorage.getItem(k)) ?? fallback; } catch(e){ return fallback; } }
+  function write(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+
+  window.showAppSection = function(section){
+    const dash = document.getElementById('app-dashboard');
+    if (section === 'dashboard') {
+      document.querySelectorAll('.app-section').forEach(x => { if(x.id !== 'app-dashboard') x.style.display='none'; });
+      if(dash) dash.style.display='block';
+      updateDashboard();
+      return;
+    }
+    if(dash) dash.style.display='none';
+    document.querySelectorAll('.app-section').forEach(x => x.style.display='');
+    const el = document.getElementById(section);
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  };
+
+  window.markLessonComplete = function(lessonKey){
+    const a = read(LS.lessons, {});
+    a[lessonKey] = {done:true, time:Date.now()};
+    write(LS.lessons,a);
+    updateDashboard();
+  };
+
+  window.saveCurrentLessonNote = function(){
+    const input=document.getElementById('lesson-note-input');
+    if(!input) return;
+    const key = window.currentLessonKey || (typeof currentLesson !== 'undefined' ? currentLesson : 'default');
+    const notes=read(LS.notes,{});
+    notes[key]=input.value;
+    write(LS.notes,notes);
+    const old=input.parentElement.querySelector('.note-saved');
+    if(old) old.remove();
+    const msg=document.createElement('span');
+    msg.className='note-saved text-green-600 text-sm ml-2';
+    msg.textContent='Đã lưu';
+    input.parentElement.querySelector('button')?.after(msg);
+  };
+
+  window.loadLessonNote = function(key){
+    const input=document.getElementById('lesson-note-input');
+    if(!input) return;
+    const notes=read(LS.notes,{});
+    input.value=notes[key] || '';
+  };
+
+  window.updateDashboard = function(){
+    const answered=read(LS.answered,[]);
+    const correct=read(LS.correct,[]);
+    const lessons=read(LS.lessons,{});
+    const wrong=(typeof getWrongKeys==='function') ? getWrongKeys() : [];
+    const setText=(id,v)=>{const e=document.getElementById(id); if(e)e.textContent=v;};
+    setText('dash-lessons', Object.keys(lessons).filter(k=>lessons[k]?.done).length);
+    setText('dash-answered', answered.length);
+    setText('dash-wrong', wrong.length);
+    setText('dash-accuracy', answered.length ? Math.round(correct.length/answered.length*100)+'%' : '0%');
+  };
+
+  document.addEventListener('DOMContentLoaded', updateDashboard);
+})();
+</script>
+
+
+<script>
+(function(){
+  window.openQuizArea = function(){
+    // Hide dashboard.
+    const dash = document.getElementById('app-dashboard');
+    if (dash) dash.style.display = 'none';
+
+    // Find the existing quiz section by common ids/text rather than assuming one id.
+    const candidates = [
+      document.getElementById('quiz'),
+      document.getElementById('quiz-section'),
+      document.getElementById('exam-section'),
+      document.getElementById('practice-section'),
+      document.getElementById('exam-container')
+    ].filter(Boolean);
+
+    if (candidates.length) {
+      const target = candidates[0];
+      target.style.display = '';
+      target.scrollIntoView({behavior:'smooth', block:'start'});
+      return true;
+    }
+
+    // Fall back to the existing navigation button if the quiz is a tab.
+    const btn = Array.from(document.querySelectorAll('button')).find(b =>
+      /Thi Thử|Luyện Trắc Nghiệm|trắc nghiệm|quiz|thi thử/i.test(b.textContent || '')
+    );
+    if (btn) {
+      btn.click();
+      setTimeout(() => {
+        const q = document.querySelector('[id*="quiz"], [id*="exam"], [id*="practice"]');
+        if (q) q.scrollIntoView({behavior:'smooth', block:'start'});
+      }, 100);
+      return true;
+    }
+
+    alert('Không tìm thấy khu vực luyện trắc nghiệm trong file.');
+    return false;
+  };
+
+  window.startQuickQuiz = function(){
+    try {
+      if (typeof createQuizSession === 'function') {
+        const result = createQuizSession('all', false);
+        // If the function returns a session but does not render, try the existing
+        // quiz rendering functions commonly used by this app.
+        if (typeof renderQuiz === 'function') renderQuiz();
+        else if (typeof renderCurrentQuestion === 'function') renderCurrentQuestion();
+        else if (typeof showQuestion === 'function') showQuestion();
+        else if (typeof loadQuizQuestion === 'function') loadQuizQuestion();
+      }
+      openQuizArea();
+    } catch (e) {
+      console.error('Quick quiz error:', e);
+      alert('Có lỗi khi tạo bộ 15 câu. Mở F12 → Console để xem chi tiết.');
+    }
+  };
+})();
+</script>
+
+
+<script>
+/* UTC Study Quest: course switcher and portable learning data */
+(function(){
+ let activeCourse='linear';
+ const $=id=>document.getElementById(id);
+ function ensureHeader(){
+   const header=document.querySelector('header .max-w-7xl');
+   if(!header || $('course-switcher')) return;
+   const wrap=document.createElement('div'); wrap.id='course-switcher'; wrap.className='flex gap-2 flex-wrap justify-center';
+   wrap.innerHTML='<button type="button" data-course="linear" class="px-3 py-1.5 rounded-full border border-emerald-400 text-xs font-bold">📘 Đại Số Tuyến Tính</button><button type="button" data-course="calculus" class="px-3 py-1.5 rounded-full border border-indigo-300 text-xs font-bold">📗 Giải Tích 1</button>';
+   header.insertBefore(wrap,header.children[1]||null);
+   wrap.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>switchCourse(b.dataset.course)));
+ }
+ function title(){const h=document.querySelector('header h1'); if(h)h.textContent='UTC Study Quest - '+(activeCourse==='linear'?'Đại Số Tuyến Tính':'Giải Tích 1');}
+ function switchCourse(course){
+   activeCourse=course; title();
+   const sw=$('course-switcher'); if(sw)sw.querySelectorAll('button').forEach(b=>{b.classList.toggle('bg-emerald-700',b.dataset.course===course&&course==='linear');b.classList.toggle('bg-indigo-700',b.dataset.course===course&&course==='calculus');b.classList.toggle('text-white',b.dataset.course===course);});
+   if(course==='calculus'){showCalculusCourse();}
+   else {backToLinearAlgebra();}
+   updateDash();
+ }
+ function updateDash(){
+   const done=activeCourse==='calculus'?Object.keys(calcCompleted||{}).filter(k=>calcCompleted[k]).length:0;
+   const total=activeCourse==='calculus'?COURSES_DATA.calculus.chapters.reduce((a,c)=>a+c.lessons.length,0):0;
+   if($('dash-lessons'))$('dash-lessons').textContent=`${done} / ${total}`;
+   const answered=JSON.parse(localStorage.getItem(activeCourse==='calculus'?'utc_calc_answered':'utc_linear_answered')||'[]');
+   const wrong=JSON.parse(localStorage.getItem(activeCourse==='calculus'?'utc_calc_wrong':'utc_quiz_wrong_keys')||'[]');
+   const correct=answered.filter(x=>x.correct).length;
+   if($('dash-answered'))$('dash-answered').textContent=answered.length;
+   if($('dash-wrong'))$('dash-wrong').textContent=wrong.length;
+   if($('dash-accuracy'))$('dash-accuracy').textContent=(answered.length?Math.round(correct/answered.length*100):0)+'%';
+ }
+ function addBackup(){
+   const d=$('app-dashboard');if(!d||$('backup-controls'))return;
+   const b=document.createElement('div');b.id='backup-controls';b.className='bg-white rounded-xl shadow p-4 mt-5 flex flex-wrap gap-2';
+   b.innerHTML='<button id="export-progress" class="px-3 py-2 rounded-lg bg-stone-800 text-white text-sm">⬇ Xuất dữ liệu JSON</button><label class="px-3 py-2 rounded-lg bg-stone-200 text-sm cursor-pointer">⬆ Nhập dữ liệu JSON<input id="import-progress" type="file" accept="application/json,.json" hidden></label>';
+   d.querySelector('.max-w-6xl')?.appendChild(b);
+   $('export-progress').onclick=()=>{const data={version:1,exportedAt:new Date().toISOString(),localStorage:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('utc_'))data.localStorage[k]=localStorage.getItem(k)}const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='utc-study-quest-progress.json';a.click();URL.revokeObjectURL(a.href)};
+   $('import-progress').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;const d=JSON.parse(await f.text());if(!d.localStorage||typeof d.localStorage!=='object')throw Error('Định dạng không hợp lệ');Object.entries(d.localStorage).forEach(([k,v])=>{if(k.startsWith('utc_')&&typeof v==='string')localStorage.setItem(k,v)});alert('Đã nhập dữ liệu. Trang sẽ tải lại để cập nhật.');location.reload()}catch(err){alert('Không thể nhập tệp: '+err.message)}};
+ }
+ window.showAppSection=function(id){document.querySelectorAll('main > section').forEach(s=>s.classList.add('hidden'));$('app-dashboard')?.style&&( $('app-dashboard').style.display='block');document.querySelectorAll('header nav button').forEach(b=>b.classList.remove('nav-btn-active'));updateDash()};
+ const oldComplete=window.completeCalculusLesson;
+ window.completeCalculusLesson=function(){if(oldComplete)oldComplete();updateDash()};
+ document.addEventListener('DOMContentLoaded',()=>{ensureHeader();addBackup();title();updateDash();const oldSwitch=window.switchTab;});
+})();
+</script>
+
+
+<script>
+/* Quiz subject switcher + calculus question bank */
+(function(){
+ const calcBank=[
+ {topic:'Tập xác định hàm số ngược',q:'Tập xác định của \\(y=\\arcsin(2x-1)\\) là:',options:['\\([0,1]\\)','\\([-1,1]\\)','\\([0,2]\\)','\\(\\mathbb R\\)'],correct:0,trapNotice:'⚠️ Điều kiện của arcsin là biểu thức bên trong thuộc [-1,1].',explain:'\\(-1\\le 2x-1\\le1\\Rightarrow0\\le x\\le1\\).'},
+ {topic:'Tập xác định hàm số ngược',q:'Tập xác định của \\(y=\\arccos(x+2)\\) là:',options:['\\([-3,-1]\\)','\\([-1,1]\\)','\\([-2,0]\\)','\\(( -3,-1)\\)'],correct:0,trapNotice:'⚠️ arccos nhận đối số trong đoạn đóng [-1,1].',explain:'\\(-1\\le x+2\\le1\\Rightarrow -3\\le x\\le-1\\).'},
+ {topic:'VCB tương đương',q:'Khi \\(x\\to0\\), biểu thức nào tương đương với \\(\\sin(3x)\\)?',options:['\\(3x\\)','\\(x/3\\)','\\(9x^2\\)','\\(1-3x\\)'],correct:0,trapNotice:'⚠️ Công thức \\(\\sin u\\sim u\\) khi u tiến về 0.',explain:'Vì \\(3x\\to0\\), nên \\(\\sin(3x)\\sim3x\\).'},
+ {topic:'VCB tương đương',q:'Khi \\(x\\to0\\), \\(1-\\cos(2x)\\) tương đương với:',options:['\\(2x^2\\)','\\(x^2\\)','\\(4x\\)','\\(2x\\)'],correct:0,trapNotice:'⚠️ Dùng \\(1-\\cos u\\sim u^2/2\\).',explain:'\\(1-\\cos(2x)\\sim(2x)^2/2=2x^2\\).'},
+ {topic:'Dạng vô định 1^∞',q:'Tính \\(\\lim_{x\\to\\infty}(1+\\frac{2}{x})^x\\).',options:['\\(e^2\\)','\\(e\\)','\\(2e\\)','\\(1\\)'],correct:0,trapNotice:'⚠️ Dạng \\(1^\\infty\\): số mũ và phần tăng nhỏ cùng tham gia giới hạn.',explain:'Đặt theo giới hạn cơ bản \\((1+a/x)^x\\to e^a\\), với a=2, được \\(e^2\\).'},
+ {topic:'Dạng vô định 1^∞',q:'Giá trị \\(\\lim_{x\\to0}(1+3x)^{1/x}\\) bằng:',options:['\\(e^3\\)','\\(e\\)','\\(3e\\)','\\(1\\)'],correct:0,trapNotice:'⚠️ Nhận diện dạng \\(1^\\infty\\), đặt u=3x.',explain:'\\((1+3x)^{1/x}=((1+3x)^{1/(3x)})^3\\to e^3\\).'},
+ {topic:'Đạo hàm hàm hợp',q:'Đạo hàm của \\(y=\\sin(x^2)\\) là:',options:['\\(2x\\cos(x^2)\\)','\\(\\cos(x^2)\\)','\\(2x\\sin(x^2)\\)','\\(-2x\\cos(x^2)\\)'],correct:0,trapNotice:'⚠️ Đạo hàm hàm hợp phải nhân đạo hàm biểu thức bên trong.',explain:'Đặt u=x², y′=cos(u)u′=2x cos(x²).'},
+ {topic:'Đạo hàm lượng giác ngược',q:'Đạo hàm của \\(y=\\arctan(2x)\\) là:',options:['\\(\\frac{2}{1+4x^2}\\)','\\(\\frac{1}{1+4x^2}\\)','\\(\\frac{2}{\\sqrt{1-4x^2}}\\)','\\(-\\frac{2}{1+4x^2}\\)'],correct:0,trapNotice:'⚠️ Đạo hàm arctan(u) là u′/(1+u²).',explain:'Với u=2x, y′=2/(1+(2x)²)=2/(1+4x²).'},
+ {topic:'Quy tắc L’Hôpital',q:'Tính \\(\\lim_{x\\to0}\\frac{e^x-1}{x}\\) bằng L’Hôpital:',options:['\\(1\\)','\\(0\\)','\\(e\\)','Không tồn tại'],correct:0,trapNotice:'⚠️ Đây là dạng 0/0, có thể lấy đạo hàm tử và mẫu.',explain:'Giới hạn bằng \\(\\lim_{x\\to0}e^x/1=1\\).'},
+ {topic:'Tích phân suy rộng loại 1',q:'Tích phân \\(\\int_1^{\\infty}\\frac{1}{x^p}dx\\) hội tụ khi:',options:['\\(p>1\\)','\\(p<1\\)','\\(p=1\\)','Mọi p'],correct:0,trapNotice:'⚠️ Với tích phân p trên [1,+∞), ngưỡng hội tụ là p=1.',explain:'Tích phân hội tụ khi và chỉ khi p>1.'},
+ {topic:'Chuỗi số',q:'Điều kiện cần để chuỗi \\(\\sum a_n\\) hội tụ là:',options:['\\(\\lim a_n=0\\)','\\(a_n>0\\) với mọi n','\\(a_n\\) tăng','\\(\\lim a_n=1\\)'],correct:0,trapNotice:'⚠️ Điều kiện số hạng tiến về 0 là cần, không đủ.',explain:'Nếu chuỗi hội tụ thì nhất thiết \\(a_n\\to0\\); chiều ngược lại không luôn đúng.'}
+ ];
+ // Ngân hàng mở rộng: 64 câu Giải tích 1 bổ sung (tổng cộng 67 câu).
+ calcBank.push(...[{"topic":"Tập xác định hàm số ngược","q":"Miền giá trị của \\(\\arcsin x\\) là:","options":["\\([-\\pi/2,\\pi/2]\\)","\\([0,\\pi]\\)","\\(\\mathbb R\\)","\\(( -\\pi/2,\\pi/2)\\)"],"correct":0,"trapNotice":"⚠️ arcsin trả về góc chính trong đoạn đóng.","explain":"Theo quy ước, \\(\\arcsin x\\in[-\\pi/2,\\pi/2]\\)."},{"topic":"Tập xác định hàm số ngược","q":"Miền giá trị của \\(\\arccos x\\) là:","options":["\\([0,\\pi]\\)","\\([-\\pi/2,\\pi/2]\\)","\\(\\mathbb R\\)","\\((0,\\pi)\\)"],"correct":0,"trapNotice":"⚠️ arccos có miền giá trị chính là [0,π].","explain":"Theo quy ước, \\(\\arccos x\\in[0,\\pi]\\)."},{"topic":"Tập xác định hàm số ngược","q":"Tập xác định của \\(y=\\arcsin(x/2)\\) là:","options":["\\([-2,2]\\)","\\([-1,1]\\)","\\([0,2]\\)","\\(\\mathbb R\\)"],"correct":0,"trapNotice":"⚠️ Đối số arcsin phải thuộc [-1,1].","explain":"\\(-1\\le x/2\\le1\\Rightarrow-2\\le x\\le2\\)."},{"topic":"Tập xác định hàm số ngược","q":"Tập xác định của \\(y=\\arccos(3-x)\\) là:","options":["\\([2,4]\\)","\\([-1,1]\\)","\\([3,4]\\)","\\([2,3]\\)"],"correct":0,"trapNotice":"⚠️ Đối số arccos phải thuộc [-1,1].","explain":"\\(-1\\le3-x\\le1\\Rightarrow2\\le x\\le4\\)."},{"topic":"Tập xác định hàm số ngược","q":"Tập xác định của \\(y=\\arcsin(x^2)\\) là:","options":["\\([-1,1]\\)","\\([0,1]\\)","\\(\\mathbb R\\)","\\((-1,1)\\)"],"correct":0,"trapNotice":"⚠️ Cần \\(0\\le x^2\\le1\\).","explain":"Suy ra \\(|x|\\le1\\), nên tập xác định là [-1,1]."},{"topic":"Tập xác định hàm số ngược","q":"Tập xác định của \\(y=\\arccos(2x+3)\\) là:","options":["\\([-2,-1]\\)","\\([-1,1]\\)","\\([-3,-2]\\)","\\([-2,0]\\)"],"correct":0,"trapNotice":"⚠️ Giải bất đẳng thức kép cho đối số.","explain":"\\(-1\\le2x+3\\le1\\Rightarrow-2\\le x\\le-1\\)."},{"topic":"Tập xác định hàm số ngược","q":"Tập xác định của \\(y=\\arcsin(1-x)\\) là:","options":["\\([0,2]\\)","\\([-2,0]\\)","\\([-1,1]\\)","\\([1,2]\\)"],"correct":0,"trapNotice":"⚠️ Điều kiện là -1 ≤ 1-x ≤ 1.","explain":"Giải bất đẳng thức được \\(0\\le x\\le2\\)."},{"topic":"Tập xác định hàm số ngược","q":"Tập xác định của \\(y=\\arccos(x^2-1)\\) là:","options":["\\([-\\sqrt2,\\sqrt2]\\)","\\([-1,1]\\)","\\([0,\\sqrt2]\\)","\\(\\mathbb R\\)"],"correct":0,"trapNotice":"⚠️ Đối số cần nằm trong [-1,1].","explain":"\\(-1\\le x^2-1\\le1\\Rightarrow0\\le x^2\\le2\\)."},{"topic":"VCB tương đương","q":"Khi \\(x\\to0\\), \\(\\tan(5x)\\) tương đương:","options":["\\(5x\\)","\\(x/5\\)","\\(25x^2\\)","\\(1\\)"],"correct":0,"trapNotice":"⚠️ Dùng tan u ~ u khi u→0.","explain":"\\(\\tan(5x)\\sim5x\\)."},{"topic":"VCB tương đương","q":"Khi \\(x\\to0\\), \\(e^{2x}-1\\) tương đương:","options":["\\(2x\\)","\\(x\\)","\\(4x^2\\)","\\(e^{2x}\\)"],"correct":0,"trapNotice":"⚠️ Dùng e^u−1 ~ u.","explain":"Với u=2x, ta có \\(e^{2x}-1\\sim2x\\)."},{"topic":"VCB tương đương","q":"Khi \\(x\\to0\\), \\(\\ln(1+4x)\\) tương đương:","options":["\\(4x\\)","\\(x/4\\)","\\(16x^2\\)","\\(1+4x\\)"],"correct":0,"trapNotice":"⚠️ Dùng ln(1+u) ~ u.","explain":"\\(\\ln(1+4x)\\sim4x\\)."},{"topic":"VCB tương đương","q":"Khi \\(x\\to0\\), \\(1-\\cos(5x)\\) tương đương:","options":["\\(25x^2/2\\)","\\(5x\\)","\\(25x^2\\)","\\(x^2/2\\)"],"correct":0,"trapNotice":"⚠️ Dùng 1−cos u ~ u²/2.","explain":"\\((5x)^2/2=25x^2/2\\)."},{"topic":"VCB tương đương","q":"Khi \\(x\\to0\\), \\(\\arctan(3x)\\) tương đương:","options":["\\(3x\\)","\\(x/3\\)","\\(9x^2\\)","\\(\\pi/2\\)"],"correct":0,"trapNotice":"⚠️ arctan u ~ u gần 0.","explain":"\\(\\arctan(3x)\\sim3x\\)."},{"topic":"VCB tương đương","q":"Khi \\(x\\to0\\), \\(\\sqrt{1+x}-1\\) tương đương:","options":["\\(x/2\\)","\\(x\\)","\\(2x\\)","\\(x^2\\)"],"correct":0,"trapNotice":"⚠️ Có thể nhân liên hợp.","explain":"\\(\\sqrt{1+x}-1=x/(\\sqrt{1+x}+1)\\sim x/2\\)."},{"topic":"VCB tương đương","q":"Khi \\(x\\to0\\), \\((1+x)^\\alpha-1\\) tương đương:","options":["\\(\\alpha x\\)","\\(x/\\alpha\\)","\\(x^2\\)","\\(1\\)"],"correct":0,"trapNotice":"⚠️ Công thức khai triển bậc nhất với α cố định.","explain":"\\((1+x)^\\alpha=1+\\alpha x+o(x)\\)."},{"topic":"VCB tương đương","q":"Khi \\(x\\to0\\), \\(\\sin x-x\\) tương đương:","options":["\\(-x^3/6\\)","\\(x^2/2\\)","\\(x^3/6\\)","\\(-x^2/2\\)"],"correct":0,"trapNotice":"⚠️ Dùng khai triển sin x đến bậc ba.","explain":"\\(\\sin x=x-x^3/6+o(x^3)\\)."},{"topic":"Dạng vô định 1^∞","q":"Tính \\(\\lim_{x\\to\\infty}(1+\\frac{3}{x})^x\\).","options":["\\(e^3\\)","\\(e\\)","\\(3e\\)","\\(1\\)"],"correct":0,"trapNotice":"⚠️ Dạng chuẩn (1+a/x)^x.","explain":"Giới hạn bằng \\(e^3\\)."},{"topic":"Dạng vô định 1^∞","q":"Tính \\(\\lim_{x\\to0}(1+x)^{2/x}\\).","options":["\\(e^2\\)","\\(e\\)","\\(2e\\)","\\(1\\)"],"correct":0,"trapNotice":"⚠️ Đưa về lũy thừa của (1+x)^(1/x).","explain":"\\(((1+x)^{1/x})^2\\to e^2\\)."},{"topic":"Dạng vô định 1^∞","q":"Tính \\(\\lim_{x\\to0}(1-2x)^{1/x}\\).","options":["\\(e^{-2}\\)","\\(e^2\\)","\\(e^{-1}\\)","\\(1\\)"],"correct":0,"trapNotice":"⚠️ Dùng ln để xử lý dạng 1^∞.","explain":"\\(\\ln L=\\lim\\ln(1-2x)/x=-2\\), nên L=e^-2."},{"topic":"Dạng vô định 1^∞","q":"Tính \\(\\lim_{n\\to\\infty}(1+\\frac{1}{n})^{2n}\\).","options":["\\(e^2\\)","\\(e\\)","\\(2e\\)","\\(1\\)"],"correct":0,"trapNotice":"⚠️ Nhận dạng giới hạn cơ bản.","explain":"\\(((1+1/n)^n)^2\\to e^2\\)."},{"topic":"Dạng vô định 1^∞","q":"Tính \\(\\lim_{x\\to\\infty}(1-\\frac{4}{x})^x\\).","options":["\\(e^{-4}\\)","\\(e^4\\)","\\(0\\)","\\(1\\)"],"correct":0,"trapNotice":"⚠️ Dùng (1+a/x)^x→e^a.","explain":"Ở đây a=-4 nên giới hạn là e^-4."},{"topic":"Dạng vô định 1^∞","q":"Tính \\(\\lim_{x\\to0}(1+5x)^{1/(2x)}\\).","options":["\\(e^{5/2}\\)","\\(e^5\\)","\\(e^{1/2}\\)","\\(1\\)"],"correct":0,"trapNotice":"⚠️ Lấy logarit hoặc đổi về số mũ chuẩn.","explain":"\\(\\ln L=\\lim\\ln(1+5x)/(2x)=5/2\\)."},{"topic":"Dạng vô định 1^∞","q":"Tính \\(\\lim_{n\\to\\infty}(1+\\frac{2}{n})^{n/3}\\).","options":["\\(e^{2/3}\\)","\\(e^2\\)","\\(e^6\\)","\\(1\\)"],"correct":0,"trapNotice":"⚠️ Tách thành lũy thừa chuẩn.","explain":"\\(((1+2/n)^n)^{1/3}\\to e^{2/3}\\)."},{"topic":"Dạng vô định 1^∞","q":"Tính \\(\\lim_{x\\to0}(1+x)^{1/(3x)}\\).","options":["\\(e^{1/3}\\)","\\(e^3\\)","\\(e\\)","\\(1\\)"],"correct":0,"trapNotice":"⚠️ Dùng giới hạn (1+x)^(1/x).","explain":"\\(((1+x)^{1/x})^{1/3}\\to e^{1/3}\\)."},{"topic":"Đạo hàm hàm hợp","q":"Đạo hàm của \\(y=e^{3x+1}\\) là:","options":["\\(3e^{3x+1}\\)","\\(e^{3x+1}\\)","\\((3x+1)e^{3x}\\)","\\(-3e^{3x+1}\\)"],"correct":0,"trapNotice":"⚠️ Đạo hàm hàm mũ hợp có nhân đạo hàm số mũ.","explain":"\\(y\\prime=3e^{3x+1}\\)."},{"topic":"Đạo hàm hàm hợp","q":"Đạo hàm của \\(y=\\ln(x^2+1)\\) là:","options":["\\(\\frac{2x}{x^2+1}\\)","\\(\\frac1{x^2+1}\\)","\\(2x\\ln(x^2+1)\\)","\\(\\frac{x}{x^2+1}\\)"],"correct":0,"trapNotice":"⚠️ (ln u)′=u′/u.","explain":"\\(y\\prime=2x/(x^2+1)\\)."},{"topic":"Đạo hàm hàm hợp","q":"Đạo hàm của \\(y=\\cos(4x)\\) là:","options":["\\(-4\\sin(4x)\\)","\\(4\\sin(4x)\\)","\\(-\\sin(4x)\\)","\\(\\cos(4x)\\)"],"correct":0,"trapNotice":"⚠️ Đạo hàm cos u là -sin(u)u′.","explain":"\\(y\\prime=-4\\sin(4x)\\)."},{"topic":"Đạo hàm hàm hợp","q":"Đạo hàm của \\(y=(x^2+1)^5\\) là:","options":["\\(10x(x^2+1)^4\\)","\\(5(x^2+1)^4\\)","\\(10x(x^2+1)^5\\)","\\(2x(x^2+1)^4\\)"],"correct":0,"trapNotice":"⚠️ Dùng quy tắc lũy thừa hàm hợp.","explain":"\\(y\\prime=5(x^2+1)^4\\cdot2x\\)."},{"topic":"Đạo hàm hàm hợp","q":"Đạo hàm của \\(y=\\sqrt{2x+3}\\) là:","options":["\\(\\frac1{\\sqrt{2x+3}}\\)","\\(\\frac1{2\\sqrt{2x+3}}\\)","\\(2\\sqrt{2x+3}\\)","\\(\\sqrt{2x+3}\\)"],"correct":0,"trapNotice":"⚠️ Viết căn thành lũy thừa 1/2.","explain":"\\(y\\prime=(1/2)(2x+3)^{-1/2}\\cdot2=1/\\sqrt{2x+3}\\)."},{"topic":"Đạo hàm hàm hợp","q":"Đạo hàm của \\(y=\\sin(x^3)\\) là:","options":["\\(3x^2\\cos(x^3)\\)","\\(\\cos(x^3)\\)","\\(3x^2\\sin(x^3)\\)","\\(-3x^2\\cos(x^3)\\)"],"correct":0,"trapNotice":"⚠️ Nhân với đạo hàm x³.","explain":"\\(y\\prime=3x^2\\cos(x^3)\\)."},{"topic":"Đạo hàm hàm hợp","q":"Đạo hàm của \\(y=\\ln(\\sin x)\\) là:","options":["\\(\\cot x\\)","\\(\\tan x\\)","\\(1/\\sin x\\)","\\(-\\cot x\\)"],"correct":0,"trapNotice":"⚠️ Đạo hàm ln u là u′/u.","explain":"\\(y\\prime=\\cos x/\\sin x=\\cot x\\)."},{"topic":"Đạo hàm hàm hợp","q":"Đạo hàm của \\(y=\\frac{1}{x^2+1}\\) là:","options":["\\(-\\frac{2x}{(x^2+1)^2}\\)","\\(\\frac{2x}{(x^2+1)^2}\\)","\\(-\\frac1{(x^2+1)^2}\\)","\\(2x\\)"],"correct":0,"trapNotice":"⚠️ Viết thành (x²+1)^−1.","explain":"\\(y\\prime=-(x^2+1)^{-2}\\cdot2x\\)."},{"topic":"Đạo hàm lượng giác ngược","q":"Đạo hàm của \\(\\arcsin x\\) là:","options":["\\(1/\\sqrt{1-x^2}\\)","\\(-1/\\sqrt{1-x^2}\\)","\\(1/(1+x^2)\\)","\\(\\sqrt{1-x^2}\\)"],"correct":0,"trapNotice":"⚠️ Công thức đạo hàm arcsin trên (-1,1).","explain":"\\((\\arcsin x)\\prime=1/\\sqrt{1-x^2}\\)."},{"topic":"Đạo hàm lượng giác ngược","q":"Đạo hàm của \\(\\arccos x\\) là:","options":["\\(-1/\\sqrt{1-x^2}\\)","\\(1/\\sqrt{1-x^2}\\)","\\(1/(1+x^2)\\)","\\(-1/(1+x^2)\\)"],"correct":0,"trapNotice":"⚠️ Đạo hàm arccos mang dấu âm.","explain":"\\((\\arccos x)\\prime=-1/\\sqrt{1-x^2}\\)."},{"topic":"Đạo hàm lượng giác ngược","q":"Đạo hàm của \\(\\arctan x\\) là:","options":["\\(1/(1+x^2)\\)","\\(1/\\sqrt{1-x^2}\\)","\\(-1/(1+x^2)\\)","\\(1/(1-x^2)\\)"],"correct":0,"trapNotice":"⚠️ Công thức đạo hàm arctan.","explain":"\\((\\arctan x)\\prime=1/(1+x^2)\\)."},{"topic":"Đạo hàm lượng giác ngược","q":"Đạo hàm của \\(\\arcsin(3x)\\) là:","options":["\\(3/\\sqrt{1-9x^2}\\)","\\(1/\\sqrt{1-9x^2}\\)","\\(-3/\\sqrt{1-9x^2}\\)","\\(3/(1+9x^2)\\)"],"correct":0,"trapNotice":"⚠️ Dùng đạo hàm hàm hợp.","explain":"\\(3/\\sqrt{1-(3x)^2}\\)."},{"topic":"Đạo hàm lượng giác ngược","q":"Đạo hàm của \\(\\arccos(2x)\\) là:","options":["\\(-2/\\sqrt{1-4x^2}\\)","\\(2/\\sqrt{1-4x^2}\\)","\\(-1/\\sqrt{1-4x^2}\\)","\\(2/(1+4x^2)\\)"],"correct":0,"trapNotice":"⚠️ arccos có dấu âm và nhân đạo hàm 2x.","explain":"\\(-2/\\sqrt{1-4x^2}\\)."},{"topic":"Đạo hàm lượng giác ngược","q":"Đạo hàm của \\(\\arctan(5x)\\) là:","options":["\\(5/(1+25x^2)\\)","\\(1/(1+25x^2)\\)","\\(-5/(1+25x^2)\\)","\\(5/\\sqrt{1-25x^2}\\)"],"correct":0,"trapNotice":"⚠️ Đạo hàm arctan u là u′/(1+u²).","explain":"\\(5/(1+25x^2)\\)."},{"topic":"Đạo hàm lượng giác ngược","q":"Đạo hàm của \\(\\arcsin(x^2)\\) là:","options":["\\(2x/\\sqrt{1-x^4}\\)","\\(1/\\sqrt{1-x^4}\\)","\\(-2x/\\sqrt{1-x^4}\\)","\\(2x/(1+x^4)\\)"],"correct":0,"trapNotice":"⚠️ Nhân với đạo hàm x².","explain":"\\(2x/\\sqrt{1-(x^2)^2}\\)."},{"topic":"Đạo hàm lượng giác ngược","q":"Đạo hàm của \\(\\arctan(x^2)\\) là:","options":["\\(2x/(1+x^4)\\)","\\(1/(1+x^4)\\)","\\(-2x/(1+x^4)\\)","\\(2x/(1+x^2)\\)"],"correct":0,"trapNotice":"⚠️ Dùng công thức arctan hàm hợp.","explain":"\\(2x/(1+x^4)\\)."},{"topic":"Quy tắc L’Hôpital","q":"Tính \\(\\lim_{x\\to0}\\frac{\\sin x}{x}\\) bằng L’Hôpital:","options":["\\(1\\)","\\(0\\)","\\(-1\\)","Không tồn tại"],"correct":0,"trapNotice":"⚠️ Dạng 0/0, đạo hàm tử và mẫu.","explain":"\\(\\lim\\cos x/1=1\\)."},{"topic":"Quy tắc L’Hôpital","q":"Tính \\(\\lim_{x\\to\\infty}\\frac{\\ln x}{x}\\):","options":["\\(0\\)","\\(1\\)","\\(\\infty\\)","Không tồn tại"],"correct":0,"trapNotice":"⚠️ Dạng ∞/∞, áp dụng L’Hôpital.","explain":"\\(\\lim (1/x)/1=0\\)."},{"topic":"Quy tắc L’Hôpital","q":"Tính \\(\\lim_{x\\to0}\\frac{e^{2x}-1}{x}\\):","options":["\\(2\\)","\\(1\\)","\\(0\\)","\\(e^2\\)"],"correct":0,"trapNotice":"⚠️ Dạng 0/0.","explain":"L’Hôpital cho \\(\\lim 2e^{2x}=2\\)."},{"topic":"Quy tắc L’Hôpital","q":"Tính \\(\\lim_{x\\to0}\\frac{\\ln(1+x)}{x}\\):","options":["\\(1\\)","\\(0\\)","\\(-1\\)","\\(e\\)"],"correct":0,"trapNotice":"⚠️ Dạng 0/0.","explain":"L’Hôpital cho \\(\\lim 1/(1+x)=1\\)."},{"topic":"Quy tắc L’Hôpital","q":"Tính \\(\\lim_{x\\to\\infty}\\frac{x}{e^x}\\):","options":["\\(0\\)","\\(1\\)","\\(\\infty\\)","\\(e\\)"],"correct":0,"trapNotice":"⚠️ Dạng ∞/∞, đạo hàm nhiều lần hoặc một lần.","explain":"L’Hôpital: \\(\\lim 1/e^x=0\\)."},{"topic":"Quy tắc L’Hôpital","q":"Tính \\(\\lim_{x\\to0}\\frac{1-\\cos x}{x^2}\\):","options":["\\(1/2\\)","\\(1\\)","\\(0\\)","\\(2\\)"],"correct":0,"trapNotice":"⚠️ Dạng 0/0; áp dụng L’Hôpital hai lần.","explain":"Lần một được sin x/(2x); lần hai được cos x/2→1/2."},{"topic":"Quy tắc L’Hôpital","q":"Tính \\(\\lim_{x\\to\\infty}\\frac{\\ln x}{\\sqrt{x}}\\):","options":["\\(0\\)","\\(1\\)","\\(\\infty\\)","\\(2\\)"],"correct":0,"trapNotice":"⚠️ Dạng ∞/∞.","explain":"L’Hôpital cho \\((1/x)/(1/(2\\sqrt{x}))=2/\\sqrt{x}\\to0\\)."},{"topic":"Quy tắc L’Hôpital","q":"Tính \\(\\lim_{x\\to0}\\frac{\\tan x}{x}\\):","options":["\\(1\\)","\\(0\\)","\\(-1\\)","\\(2\\)"],"correct":0,"trapNotice":"⚠️ Dạng 0/0.","explain":"L’Hôpital cho \\(\\sec^2x\\to1\\)."},{"topic":"Tích phân suy rộng loại 1","q":"Tích phân \\(\\int_1^\\infty\\frac1{x^2}dx\\) bằng:","options":["\\(1\\)","\\(0\\)","\\(\\infty\\)","\\(2\\)"],"correct":0,"trapNotice":"⚠️ Tính giới hạn của tích phân đến R.","explain":"\\(\\lim_{R\\to\\infty}[-1/x]_1^R=1\\)."},{"topic":"Tích phân suy rộng loại 1","q":"Tích phân \\(\\int_1^\\infty\\frac1x dx\\) là:","options":["Phân kỳ","Hội tụ bằng 1","Hội tụ bằng 0","Hội tụ bằng e"],"correct":0,"trapNotice":"⚠️ Đây là trường hợp p=1 của tích phân p.","explain":"\\(\\lim_{R\\to\\infty}\\ln R=\\infty\\), nên phân kỳ."},{"topic":"Tích phân suy rộng loại 1","q":"Tích phân \\(\\int_1^\\infty\\frac1{x^3}dx\\) bằng:","options":["\\(1/2\\)","\\(1\\)","\\(3\\)","Phân kỳ"],"correct":0,"trapNotice":"⚠️ Nguyên hàm là -1/(2x²).","explain":"Giới hạn bằng 0−(-1/2)=1/2."},{"topic":"Tích phân suy rộng loại 1","q":"Tích phân \\(\\int_0^\\infty e^{-x}dx\\) bằng:","options":["\\(1\\)","\\(0\\)","\\(e\\)","Phân kỳ"],"correct":0,"trapNotice":"⚠️ Tách giới hạn tại cận vô cùng.","explain":"\\(\\int_0^R e^{-x}dx=1-e^{-R}\\to1\\)."},{"topic":"Tích phân suy rộng loại 1","q":"Tích phân \\(\\int_1^\\infty\\frac1{\\sqrt{x}}dx\\) là:","options":["Phân kỳ","Hội tụ bằng 2","Hội tụ bằng 1","Hội tụ bằng 1/2"],"correct":0,"trapNotice":"⚠️ Ở đây p=1/2 không lớn hơn 1.","explain":"Nguyên hàm 2√x tăng vô hạn nên tích phân phân kỳ."},{"topic":"Tích phân suy rộng loại 1","q":"Tích phân \\(\\int_2^\\infty\\frac1{x^4}dx\\) hội tụ hay phân kỳ?","options":["Hội tụ","Phân kỳ","Không xác định","Bằng 0"],"correct":0,"trapNotice":"⚠️ p=4>1.","explain":"Tích phân p hội tụ khi p>1."},{"topic":"Tích phân suy rộng loại 1","q":"Tích phân \\(\\int_0^\\infty\\frac1{1+x^2}dx\\) bằng:","options":["\\(\\pi/2\\)","\\(\\pi\\)","\\(1\\)","Phân kỳ"],"correct":0,"trapNotice":"⚠️ Nguyên hàm là arctan x.","explain":"\\(\\lim_{R\\to\\infty}(\\arctan R-0)=\\pi/2\\)."},{"topic":"Tích phân suy rộng loại 1","q":"Tích phân \\(\\int_1^\\infty\\frac{3}{x^2}dx\\) bằng:","options":["\\(3\\)","\\(1\\)","\\(0\\)","Phân kỳ"],"correct":0,"trapNotice":"⚠️ Đưa hằng số 3 ra ngoài.","explain":"Bằng 3 lần tích phân 1/x², tức 3."},{"topic":"Chuỗi số","q":"Chuỗi hình học \\(\\sum_{n=0}^\\infty (1/3)^n\\) có tổng:","options":["\\(3/2\\)","\\(1\\)","\\(3\\)","Phân kỳ"],"correct":0,"trapNotice":"⚠️ Chuỗi hình học hội tụ khi |q|<1.","explain":"Tổng bằng 1/(1−1/3)=3/2."},{"topic":"Chuỗi số","q":"Chuỗi \\(\\sum_{n=1}^\\infty 1/n\\) là:","options":["Phân kỳ","Hội tụ","Có tổng bằng 1","Hội tụ tuyệt đối"],"correct":0,"trapNotice":"⚠️ Đây là chuỗi điều hòa.","explain":"Chuỗi điều hòa phân kỳ."},{"topic":"Chuỗi số","q":"Chuỗi \\(\\sum_{n=1}^\\infty 1/n^2\\) là:","options":["Hội tụ","Phân kỳ","Số hạng không về 0","Không xác định"],"correct":0,"trapNotice":"⚠️ Chuỗi p hội tụ khi p>1.","explain":"Với p=2>1, chuỗi hội tụ."},{"topic":"Chuỗi số","q":"Nếu \\(\\lim a_n\\ne0\\), chuỗi \\(\\sum a_n\\):","options":["Phân kỳ","Hội tụ","Hội tụ tuyệt đối","Có tổng bằng 0"],"correct":0,"trapNotice":"⚠️ Điều kiện cần hội tụ không thỏa.","explain":"Số hạng không tiến về 0 nên chuỗi phân kỳ."},{"topic":"Chuỗi số","q":"Chuỗi \\(\\sum_{n=1}^\\infty (2/5)^n\\) có tổng:","options":["\\(2/3\\)","\\(5/2\\)","\\(1\\)","\\(5/3\\)"],"correct":0,"trapNotice":"⚠️ Chuỗi bắt đầu từ n=1.","explain":"Tổng = q/(1−q)=(2/5)/(3/5)=2/3."},{"topic":"Chuỗi số","q":"Chuỗi \\(\\sum_{n=1}^\\infty (-1)^{n-1}/n\\) là:","options":["Hội tụ có điều kiện","Phân kỳ","Hội tụ tuyệt đối","Có số hạng không về 0"],"correct":0,"trapNotice":"⚠️ Dùng tiêu chuẩn Leibniz; chuỗi trị tuyệt đối là chuỗi điều hòa.","explain":"Chuỗi luân phiên hội tụ, nhưng không hội tụ tuyệt đối."},{"topic":"Chuỗi số","q":"Chuỗi \\(\\sum_{n=1}^\\infty 1/2^n\\) có tổng:","options":["\\(1\\)","\\(2\\)","\\(1/2\\)","\\(\\infty\\)"],"correct":0,"trapNotice":"⚠️ Cấp số nhân với số hạng đầu 1/2.","explain":"Tổng = (1/2)/(1−1/2)=1."},{"topic":"Chuỗi số","q":"Nếu \\(\\sum |a_n|\\) hội tụ thì \\(\\sum a_n\\):","options":["Hội tụ tuyệt đối","Phân kỳ","Chắc chắn có tổng bằng 0","Không thể kết luận"],"correct":0,"trapNotice":"⚠️ Định nghĩa hội tụ tuyệt đối.","explain":"Hội tụ của chuỗi trị tuyệt đối kéo theo hội tụ của chuỗi ban đầu."}]);
+ let subject='linear';
+ const originalCreate=window.createQuizSession;
+ const originalPopulate=window.populateQuizTopics;
+ function addSwitcher(){
+  const card=document.getElementById('sec-quiz'); if(!card||document.getElementById('quiz-subject-switcher'))return;
+  const wrap=document.createElement('div');wrap.id='quiz-subject-switcher';wrap.className='flex flex-wrap gap-2';
+  wrap.innerHTML='<button type="button" data-s="linear" class="px-4 py-2 rounded-lg border text-sm font-bold">📘 Luyện Đại Số Tuyến Tính</button><button type="button" data-s="calc" class="px-4 py-2 rounded-lg border text-sm font-bold">📗 Luyện Giải Tích 1</button>';
+  card.insertBefore(wrap,card.firstChild);
+  wrap.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{subject=b.dataset.s;sync();startTopicQuiz('all');}));
+ }
+ function sync(){
+  const w=document.getElementById('quiz-subject-switcher');if(w)w.querySelectorAll('button').forEach(b=>{const on=b.dataset.s===subject;b.classList.toggle('bg-indigo-700',on&&subject==='calc');b.classList.toggle('bg-emerald-800',on&&subject==='linear');b.classList.toggle('text-white',on);b.classList.toggle('border-indigo-700',on&&subject==='calc');b.classList.toggle('border-emerald-700',on&&subject==='linear');});
+  const h=document.querySelector('#sec-quiz h2');if(h)h.innerHTML=subject==='calc'?'🎯 LUYỆN TRẮC NGHIỆM GIẢI TÍCH 1':'🎯 LUYỆN TRẮC NGHIỆM ĐẠI SỐ TUYẾN TÍNH';
+  const d=document.querySelector('#sec-quiz .bg-stone-800 p');if(d)d.textContent=subject==='calc'?'Luyện tập các chuyên đề Giải tích 1.':'Bài luyện trắc nghiệm Đại số tuyến tính.';
+  populate();
+ }
+ const LEVEL_LABELS=['','Cơ bản','Trung bình','Vận dụng','Nâng cao'];
+ const LINEAR_TOPIC_LEVELS={
+   'Định thức & ma trận nghịch đảo':1,
+   'Phép toán & tích ma trận':1,
+   'Ma trận và biểu thức ma trận':1,
+   'Hạng ma trận':1,
+   'Hệ phương trình tuyến tính':2,
+   'Biến đổi sơ cấp & Gauss':2,
+   'Không gian vectơ':3,
+   'Ánh xạ tuyến tính':3,
+   'Trị riêng & vectơ riêng':4,
+   'Tổng hợp nhiều chương':4
+ };
+
+ function linearTopicAndLevel(q){
+   const text=`${q.q} ${q.explain||''} ${q.trapNotice||''}`;
+   if(/trị riêng|vectơ riêng|eigen/i.test(text)) return ['Trị riêng & vectơ riêng',4];
+   if(/ánh xạ tuyến tính|ánh xạ.*tuyến/i.test(text)) return ['Ánh xạ tuyến tính',3];
+   if(/không gian vectơ|không gian vector|cơ sở|độc lập tuyến tính|phụ thuộc tuyến tính|số chiều|tọa độ vectơ/i.test(text)) return ['Không gian vectơ',3];
+   if(/Gauss|biến đổi sơ cấp|khử Gauss/i.test(text)) return ['Biến đổi sơ cấp & Gauss',2];
+   if(/hệ.*phương trình|hệ thuần nhất|Kronecker|nghiệm cơ bản/i.test(text)) return ['Hệ phương trình tuyến tính',2];
+   if(/hạng|r\(A\)/i.test(text)) return ['Hạng ma trận',1];
+   if(/tích.*ma trận|nhân ma trận|kích thước.*ma trận|AB\b/i.test(text)) return ['Phép toán & tích ma trận',1];
+   if(/định thức|det\(|nghịch đảo|A\^\{-1\}/i.test(text)) return ['Định thức & ma trận nghịch đảo',1];
+   return ['Ma trận và biểu thức ma trận',1];
+ }
+
+ function setQuizTopicLabel(label){
+   const t=document.querySelector('#quiz-topic-toggle span');
+   if(t) t.textContent=label;
+ }
+
+ window.toggleQuizTopicMenu=function(){
+   const m=document.getElementById('quiz-topic-menu');
+   if(m)m.classList.toggle('hidden');
+ };
+
+ function buildNestedLinearMenu(bank){
+   const menu=document.getElementById('quiz-topic-menu');
+   if(!menu)return;
+   const topicSet=new Set(bank.map(linearTopicAndLevel).map(x=>x[0]));
+   const topics=[...Object.keys(LINEAR_TOPIC_LEVELS).filter(t=>topicSet.has(t))];
+   const levelText=i=>`Mức ${i} · ${LEVEL_LABELS[i]}`;
+   let html='<button type="button" class="w-full text-left px-4 py-2.5 font-semibold text-stone-800 hover:bg-stone-100" data-topic="all">🎯 Tất cả dạng bài</button>';
+   topics.forEach(topic=>{
+     html+=`<div class="px-4 pt-3 pb-1 font-bold text-stone-800">${topic}</div>`;
+     for(let level=1;level<=4;level++){
+       const count=bank.filter(q=>{const [t,l]=linearTopicAndLevel(q);return t===topic&&l===level;}).length;
+       const value=encodeURIComponent(topic)+'::'+level;
+       const muted=count?'' :' text-stone-400';
+       html+=`<button type="button" class="w-full text-left pl-10 pr-4 py-2 text-sm hover:bg-stone-100${muted}" data-topic="${value}" ${count?'':'title="Chưa có câu hỏi trong ngân hàng hiện tại"'}>${levelText(level)}</button>`;
+     }
+   });
+   menu.innerHTML=html;
+   menu.querySelectorAll('button[data-topic]').forEach(btn=>{
+     btn.addEventListener('click',()=>{
+       const value=decodeURIComponent(btn.dataset.topic);
+       menu.classList.add('hidden');
+       setQuizTopicLabel(btn.textContent.trim());
+       const sel=document.getElementById('quiz-topic-select');
+       if(sel)sel.value=btn.dataset.topic;
+       startTopicQuiz(value);
+     });
+   });
+ }
+
+ function buildCalcMenu(bank){
+   const menu=document.getElementById('quiz-topic-menu');
+   if(!menu)return;
+   const topics=[...new Set(bank.map(q=>q.topic||'Khác'))];
+   let html='<button type="button" class="w-full text-left px-4 py-2.5 font-semibold text-stone-800 hover:bg-stone-100" data-topic="all">🎯 Tất cả dạng bài</button>';
+   topics.forEach(t=>html+=`<button type="button" class="w-full text-left px-4 py-2 text-sm hover:bg-stone-100" data-topic="${encodeURIComponent(t)}">${t}</button>`);
+   menu.innerHTML=html;
+   menu.querySelectorAll('button[data-topic]').forEach(btn=>{
+     btn.addEventListener('click',()=>{
+       const value=decodeURIComponent(btn.dataset.topic);
+       menu.classList.add('hidden');
+       setQuizTopicLabel(btn.textContent.trim());
+       const sel=document.getElementById('quiz-topic-select');
+       if(sel)sel.value=btn.dataset.topic;
+       startTopicQuiz(value);
+     });
+   });
+ }
+
+ function populate(){
+   const sel=document.getElementById('quiz-topic-select');if(!sel)return;
+   const bank=subject==='calc'?calcBank:buildDynamicQuizBank(BASE_QUIZ_DATA).map(enrichQuizQuestion);
+   if(subject==='linear'){
+     sel.innerHTML='<option value="all">🎯 Tất cả dạng bài</option>';
+     const values=[...new Set(bank.map(q=>{const [t,l]=linearTopicAndLevel(q);return encodeURIComponent(t)+'::'+l;}))];
+     values.forEach(v=>sel.insertAdjacentHTML('beforeend',`<option value="${v}">${decodeURIComponent(v.split('::')[0])} · Mức ${v.split('::')[1]}</option>`));
+     buildNestedLinearMenu(bank);
+   }else{
+     sel.innerHTML='<option value="all">🎯 Tất cả dạng bài</option>';
+     buildCalcMenu(bank);
+   }
+   setQuizTopicLabel('🎯 Tất cả dạng bài');
+   updateWrongCount();
+ }
+
+ window.populateQuizTopics=populate;
+ window.createQuizSession=function(topic='all',wrongOnly=false){
+  const bank=subject==='calc'?calcBank.map(q=>({...q,key:q.key||q.q})):buildDynamicQuizBank(BASE_QUIZ_DATA).map(enrichQuizQuestion);
+  let pool=bank;
+  if(wrongOnly) pool=bank.filter(q=>new Set(getWrongKeys()).has(q.key));
+  else if(topic!=='all'){
+    const parts=topic.split('::');
+    if(subject==='linear'){
+      if(parts.length===2){
+        const t=decodeURIComponent(parts[0]),level=Number(parts[1]);
+        pool=bank.filter(q=>{const [qt,ql]=linearTopicAndLevel(q);return qt===t&&ql===level;});
+      }else{
+        const t=decodeURIComponent(topic);
+        pool=bank.filter(q=>linearTopicAndLevel(q)[0]===t);
+      }
+    }else{
+      if(parts.length===2){
+        const t=decodeURIComponent(parts[0]),level=Number(parts[1]);
+        pool=bank.filter(q=>(q.topic||getQuizTopic(q))===t&&q.level===level);
+      }else pool=bank.filter(q=>(q.topic||getQuizTopic(q))===topic);
+    }
+  }
+  if(!pool.length){alert(wrongOnly?'Chưa có câu sai thuộc môn này.':'Chưa có câu hỏi cho dạng này.');return [];}
+  return shuffleArray(pool).slice(0,15).map(q=>{const pairs=q.options.map((opt,i)=>({opt,correct:i===q.correct}));const a=shuffleArray(pairs);return {...q,options:a.map(x=>x.opt),correct:a.findIndex(x=>x.correct)};});
+ };
+ document.addEventListener('DOMContentLoaded',()=>{
+   addSwitcher();sync();
+   document.addEventListener('click',e=>{
+     const wrap=document.getElementById('quiz-topic-menu-wrap');
+     const menu=document.getElementById('quiz-topic-menu');
+     if(menu&&wrap&&!wrap.contains(e.target))menu.classList.add('hidden');
+   });
+ });
+})();
+</script>
+
+</body>
+</html>
